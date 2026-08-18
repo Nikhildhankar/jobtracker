@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { UIContext } from './uiContextDef';
 import type { ActivePage, StageCounts } from './uiContextDef';
 
@@ -25,22 +25,24 @@ export const UIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     actionNeeded: 0,
   });
 
-  const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed((prev) => !prev);
+  }, []);
 
-  const openDrawer = (appId: string, initialTab: 'overview' | 'timeline' | 'prep' | 'docs' = 'overview') => {
+  const openDrawer = useCallback((appId: string, initialTab: 'overview' | 'timeline' | 'prep' | 'docs' = 'overview') => {
     setSelectedAppId(appId);
     setDrawerTab(initialTab);
     setDrawerOpen(true);
-  };
+  }, []);
 
-  const closeDrawer = () => {
+  const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
     setSelectedAppId(null);
-  };
+  }, []);
 
-  const updateStageCounts = (counts: Partial<StageCounts>) => {
+  const updateStageCounts = useCallback((counts: Partial<StageCounts>) => {
     setStageCounts((prev) => ({ ...prev, ...counts }));
-  };
+  }, []);
 
   // Keyboard Shortcuts Listener
   useEffect(() => {
@@ -73,31 +75,47 @@ export const UIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [commandPaletteOpen, quickAddOpen, drawerOpen]);
+  }, [commandPaletteOpen, quickAddOpen, drawerOpen, closeDrawer]);
+
+  const contextValue = useMemo(
+    () => ({
+      sidebarCollapsed,
+      setSidebarCollapsed,
+      toggleSidebar,
+      commandPaletteOpen,
+      setCommandPaletteOpen,
+      drawerOpen,
+      setDrawerOpen,
+      quickAddOpen,
+      setQuickAddOpen,
+      selectedAppId,
+      drawerTab,
+      setDrawerTab,
+      openDrawer,
+      closeDrawer,
+      activePage,
+      setActivePage,
+      stageCounts,
+      updateStageCounts,
+    }),
+    [
+      sidebarCollapsed,
+      toggleSidebar,
+      commandPaletteOpen,
+      drawerOpen,
+      quickAddOpen,
+      selectedAppId,
+      drawerTab,
+      openDrawer,
+      closeDrawer,
+      activePage,
+      stageCounts,
+      updateStageCounts,
+    ]
+  );
 
   return (
-    <UIContext.Provider
-      value={{
-        sidebarCollapsed,
-        setSidebarCollapsed,
-        toggleSidebar,
-        commandPaletteOpen,
-        setCommandPaletteOpen,
-        drawerOpen,
-        setDrawerOpen,
-        quickAddOpen,
-        setQuickAddOpen,
-        selectedAppId,
-        drawerTab,
-        setDrawerTab,
-        openDrawer,
-        closeDrawer,
-        activePage,
-        setActivePage,
-        stageCounts,
-        updateStageCounts,
-      }}
-    >
+    <UIContext.Provider value={contextValue}>
       {children}
     </UIContext.Provider>
   );

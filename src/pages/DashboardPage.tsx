@@ -27,38 +27,38 @@ export const DashboardPage: React.FC = () => {
   const [attention, setAttention] = useState<AttentionItem[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        const [statsData, attentionData, activityData] = await Promise.all([
-          api.getDashboardStats().catch(() => null),
-          api.getDashboardAttention().catch(() => null),
-          api.getDashboardActivity().catch(() => null),
-        ]);
+  const fetchDashboardData = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const [statsData, attentionData, activityData] = await Promise.all([
+        api.getDashboardStats().catch(() => null),
+        api.getDashboardAttention().catch(() => null),
+        api.getDashboardActivity().catch(() => null),
+      ]);
 
-        if (statsData) {
-          setStats(statsData);
-          updateStageCounts(statsData.stageCounts);
-        }
-        if (attentionData) {
-          const combined = [
-            ...(attentionData.staleApplications || []),
-            ...(attentionData.upcomingInterviews || []),
-          ];
-          setAttention(combined);
-          updateStageCounts({ actionNeeded: combined.length });
-        }
-        if (activityData) {
-          setActivities(activityData.activity || []);
-        }
-      } finally {
-        setLoading(false);
+      if (statsData) {
+        setStats(statsData);
+        updateStageCounts(statsData.stageCounts);
       }
-    };
-
-    fetchDashboardData();
+      if (attentionData) {
+        const combined = [
+          ...(attentionData.staleApplications || []),
+          ...(attentionData.upcomingInterviews || []),
+        ];
+        setAttention(combined);
+        updateStageCounts({ actionNeeded: combined.length });
+      }
+      if (activityData) {
+        setActivities(activityData.activity || []);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [updateStageCounts]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const stageCounts = stats?.stageCounts || {
     Wishlist: 0,
