@@ -1,67 +1,74 @@
 :root {
-  /* Core Canvas & Surfaces */
-  --bg-canvas: #f8fafc;
-  --surface-card: #ffffff;
-  --surface-subtle: #f1f5f9;
-  --surface-hover: #f8fafc;
-  --surface-active: #e2e8f0;
+  /* Core Simplify-Inspired Canvas & Surfaces */
+  --bg-canvas: #F8FAFC;
+  --surface-card: #FFFFFF;
+  --surface-subtle: #F1F5F9;
+  --surface-hover: #F8FAFC;
+  --surface-active: #E2E8F0;
   --surface-overlay: rgba(15, 23, 42, 0.4);
 
   /* Typography & Content Colors */
-  --text-primary: #0f172a;
+  --text-primary: #0F172A;
   --text-secondary: #475569;
-  --text-muted: #7c8896; /* Contrast checked > 3.1:1 against #F8FAFC & #FFFFFF */
-  --text-inverted: #ffffff;
+  --text-muted: #64748B;
+  --text-inverted: #FFFFFF;
 
-  /* Borders & Focus Rings */
-  --border-default: #e2e8f0;
-  --border-subtle: #f1f5f9;
-  --border-strong: #cbd5e1;
-  --border-focus: #2563eb;
+  /* Borders & Focus */
+  --border-default: #E2E8F0;
+  --border-subtle: #F1F5F9;
+  --border-strong: #CBD5E1;
+  --border-focus: #2B59FF;
 
-  /* Primary Brand Accent */
-  --primary-blue: #2563eb;
-  --primary-blue-hover: #1d4ed8;
-  --primary-blue-subtle: rgba(37, 99, 235, 0.08);
-  --primary-blue-border: rgba(37, 99, 235, 0.25);
+  /* Simplify Brand Electric Indigo / Royal Blue */
+  --primary-blue: #2B59FF;
+  --primary-blue-hover: #1E46E6;
+  --primary-blue-subtle: rgba(43, 89, 255, 0.08);
+  --primary-blue-border: rgba(43, 89, 255, 0.22);
 
-  /* Semantic Pipeline Accents & Tints */
-  --stage-wishlist: #64748b;
-  --stage-wishlist-bg: rgba(100, 116, 139, 0.08);
+  /* Semantic Pipeline Accents & Soft Tints (Simplify Style) */
+  --stage-wishlist: #64748B;
+  --stage-wishlist-bg: #F1F5F9;
+  --stage-wishlist-border: #E2E8F0;
 
-  --stage-applied: #2563eb;
-  --stage-applied-bg: rgba(37, 99, 235, 0.08);
+  --stage-applied: #2563EB;
+  --stage-applied-bg: #EFF6FF;
+  --stage-applied-border: #BFDBFE;
 
-  --stage-screening: #d97706;
-  --stage-screening-bg: rgba(217, 119, 6, 0.08);
+  --stage-screening: #D97706;
+  --stage-screening-bg: #FFFBEB;
+  --stage-screening-border: #FDE68A;
 
-  --stage-interview: #7c3aed;
-  --stage-interview-bg: rgba(124, 58, 237, 0.08);
+  --stage-interview: #7C3AED;
+  --stage-interview-bg: #F5F3FF;
+  --stage-interview-border: #DDD6FE;
 
   --stage-offer: #059669;
-  --stage-offer-bg: rgba(5, 150, 105, 0.10);
+  --stage-offer-bg: #ECFDF5;
+  --stage-offer-border: #A7F3D0;
 
-  --stage-rejected: #e11d48;
-  --stage-rejected-bg: rgba(225, 29, 72, 0.08);
+  --stage-rejected: #E11D48;
+  --stage-rejected-bg: #FFF1F2;
+  --stage-rejected-border: #FECDD3;
 
-  --stage-archived: #71717a;
-  --stage-archived-bg: rgba(113, 113, 122, 0.08);
+  --stage-archived: #71717A;
+  --stage-archived-bg: #F4F4F5;
+  --stage-archived-border: #E4E4E7;
 
-  /* Multi-Stop Soft Diffused Shadows */
+  /* Diffused Soft Shadows */
   --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
   --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-  --shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
-  --shadow-card-hover: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+  --shadow-card: 0 2px 4px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+  --shadow-card-hover: 0 8px 16px -4px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
   --shadow-modal: 0 20px 25px -5px rgba(15, 23, 42, 0.10), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
   --shadow-dropdown: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
 
   /* Tactile Button Shadows */
-  --shadow-button-primary: 0 1px 2px 0 rgba(37, 99, 235, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-  --shadow-button-secondary: 0 1px 2px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 0 #ffffff;
+  --shadow-button-primary: 0 1px 2px 0 rgba(43, 89, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+  --shadow-button-secondary: 0 1px 2px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 0 #FFFFFF;
 
   /* Typography Families */
-  --font-display: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-body: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
   /* Radii Scale */
@@ -74,5 +81,5 @@
   --radius-full: 9999px;
 
   /* Spring Physics Transition */
-  --transition-spring: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-spring: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }

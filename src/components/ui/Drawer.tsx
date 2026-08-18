@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Building2, ExternalLink, Calendar, MapPin, DollarSign, Briefcase, FileText } from 'lucide-react';
+import { X, ExternalLink, Calendar, MapPin, DollarSign, Briefcase, FileText } from 'lucide-react';
 import { Badge } from './Badge';
 import { SegmentedTabs } from './SegmentedTabs';
+import { CompanyAvatar } from './CompanyAvatar';
+import { StageDropdown } from './StageDropdown';
 import { api } from '../../services/api';
 import type { ApplicationData } from '../../services/api';
+import type { PipelineStage } from '../../../server/models/Application';
 
 export interface DrawerProps {
   isOpen: boolean;
@@ -34,6 +37,23 @@ export const Drawer: React.FC<DrawerProps> = ({
         .finally(() => setLoading(false));
     }
   }, [isOpen, applicationId]);
+
+  const handleStageChange = async (newStage: PipelineStage) => {
+    if (!applicationId || !appData) return;
+    setAppData({
+      ...appData,
+      stage: newStage,
+      stageHistory: [
+        ...appData.stageHistory,
+        { stage: newStage, timestamp: new Date().toISOString() },
+      ],
+    });
+    try {
+      await api.updateApplicationStage(applicationId, newStage);
+    } catch (err) {
+      console.error('Failed to update stage in drawer:', err);
+    }
+  };
 
   // Fallback demo values if real ID is not in DB yet
   const companyName = appData?.companyName || 'Acme AI Systems';
@@ -71,28 +91,25 @@ export const Drawer: React.FC<DrawerProps> = ({
           />
 
           <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
-            {/* 520px Slide-Over Panel */}
+            {/* 540px Slide-Over Panel */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-              className="w-screen max-w-[520px] bg-white shadow-2xl flex flex-col border-l border-[#E2E8F0]"
+              className="w-screen max-w-[540px] bg-white shadow-2xl flex flex-col border-l border-[#E2E8F0]"
             >
               {/* Header */}
               <div className="p-6 border-b border-[#E2E8F0] space-y-4">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#2563EB] font-bold text-xl uppercase">
-                      {companyName.charAt(0)}
-                    </div>
+                  <div className="flex items-center gap-3.5">
+                    <CompanyAvatar name={companyName} size="lg" />
                     <div>
-                      <h2 className="text-lg font-semibold text-[#0F172A]">{roleTitle}</h2>
-                      <div className="flex items-center gap-2 text-xs text-[#475569] mt-0.5">
-                        <Building2 className="w-3.5 h-3.5 text-[#94A3B8]" />
-                        <span>{companyName}</span>
+                      <h2 className="text-lg font-bold text-[#0F172A] leading-tight">{roleTitle}</h2>
+                      <div className="flex items-center gap-2 text-xs text-[#64748B] mt-1">
+                        <span className="font-semibold text-[#0F172A]">{companyName}</span>
                         <span>•</span>
-                        <Badge stage={stage} size="sm" />
+                        <StageDropdown stage={stage} onChange={handleStageChange} size="sm" />
                       </div>
                     </div>
                   </div>
@@ -104,7 +121,7 @@ export const Drawer: React.FC<DrawerProps> = ({
                   </button>
                 </div>
 
-                {/* Craft-Style Drawer Tabs */}
+                {/* Simplify-Style Drawer Tabs */}
                 <SegmentedTabs
                   tabs={[
                     { id: 'overview', label: 'Overview' },
@@ -123,8 +140,8 @@ export const Drawer: React.FC<DrawerProps> = ({
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {loading ? (
                   <div className="space-y-4">
-                    <div className="h-20 bg-[#F1F5F9] rounded-xl animate-pulse" />
-                    <div className="h-32 bg-[#F1F5F9] rounded-xl animate-pulse" />
+                    <div className="h-20 bg-[#F1F5F9] rounded-2xl animate-pulse" />
+                    <div className="h-32 bg-[#F1F5F9] rounded-2xl animate-pulse" />
                   </div>
                 ) : (
                   <>
@@ -132,34 +149,34 @@ export const Drawer: React.FC<DrawerProps> = ({
                       <div className="space-y-6">
                         {/* Quick Specs Grid */}
                         <div className="grid grid-cols-2 gap-3">
-                          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs text-[#7C8896]">
+                          <div className="p-3.5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs text-[#64748B] font-semibold">
                               <DollarSign className="w-3.5 h-3.5 text-[#059669]" />
                               <span>Compensation</span>
                             </div>
-                            <p className="text-sm font-semibold text-[#0F172A] font-mono-tabular">
+                            <p className="text-sm font-bold text-[#0F172A] font-mono-tabular">
                               {salaryText}
                             </p>
                           </div>
 
-                          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs text-[#7C8896]">
-                              <MapPin className="w-3.5 h-3.5 text-[#2563EB]" />
+                          <div className="p-3.5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs text-[#64748B] font-semibold">
+                              <MapPin className="w-3.5 h-3.5 text-[#2B59FF]" />
                               <span>Location</span>
                             </div>
                             <p className="text-sm font-medium text-[#0F172A] truncate">{location}</p>
                           </div>
 
-                          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs text-[#7C8896]">
+                          <div className="p-3.5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs text-[#64748B] font-semibold">
                               <Calendar className="w-3.5 h-3.5 text-[#D97706]" />
                               <span>Applied Date</span>
                             </div>
                             <p className="text-sm font-medium text-[#0F172A]">{appliedDate}</p>
                           </div>
 
-                          <div className="p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs text-[#7C8896]">
+                          <div className="p-3.5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs text-[#64748B] font-semibold">
                               <Briefcase className="w-3.5 h-3.5 text-[#7C3AED]" />
                               <span>Source</span>
                             </div>
@@ -168,9 +185,9 @@ export const Drawer: React.FC<DrawerProps> = ({
                         </div>
 
                         {/* Recruiter / Contact Card */}
-                        <div className="p-4 rounded-xl border border-[#E2E8F0] bg-white space-y-3 shadow-sm">
+                        <div className="p-4 rounded-2xl border border-[#E2E8F0] bg-white space-y-3 shadow-xs">
                           <div className="flex items-center justify-between">
-                            <h4 className="text-xs font-semibold uppercase text-[#7C8896] tracking-wider">
+                            <h4 className="text-xs font-bold uppercase text-[#64748B] tracking-wider">
                               Primary Contact
                             </h4>
                             <Badge variant="emerald" size="sm" showDot={true}>
@@ -179,12 +196,12 @@ export const Drawer: React.FC<DrawerProps> = ({
                           </div>
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm font-semibold text-[#0F172A]">{contactName}</p>
-                              <p className="text-xs text-[#475569]">{contactRole}</p>
+                              <p className="text-sm font-bold text-[#0F172A]">{contactName}</p>
+                              <p className="text-xs text-[#64748B]">{contactRole}</p>
                             </div>
                             <a
                               href={`mailto:${contactEmail}`}
-                              className="text-xs font-medium text-[#2563EB] hover:underline"
+                              className="text-xs font-semibold text-[#2B59FF] hover:underline"
                             >
                               {contactEmail}
                             </a>
@@ -193,10 +210,10 @@ export const Drawer: React.FC<DrawerProps> = ({
 
                         {/* Notes Section */}
                         <div className="space-y-2">
-                          <h4 className="text-xs font-semibold uppercase text-[#7C8896] tracking-wider">
+                          <h4 className="text-xs font-bold uppercase text-[#64748B] tracking-wider">
                             Application Notes
                           </h4>
-                          <div className="p-3.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-sm text-[#475569]">
+                          <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] text-sm text-[#475569]">
                             {notes || 'No custom notes recorded.'}
                           </div>
                         </div>
@@ -204,10 +221,10 @@ export const Drawer: React.FC<DrawerProps> = ({
                         {/* Raw Job Description */}
                         {appData?.jobDescriptionRaw && (
                           <div className="space-y-2">
-                            <h4 className="text-xs font-semibold uppercase text-[#7C8896] tracking-wider">
+                            <h4 className="text-xs font-bold uppercase text-[#64748B] tracking-wider">
                               Job Description Text
                             </h4>
-                            <div className="p-3.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-xs text-[#475569] font-mono whitespace-pre-wrap max-h-48 overflow-y-auto">
+                            <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs text-[#475569] font-mono whitespace-pre-wrap max-h-48 overflow-y-auto">
                               {appData.jobDescriptionRaw}
                             </div>
                           </div>
@@ -217,17 +234,17 @@ export const Drawer: React.FC<DrawerProps> = ({
 
                     {activeTab === 'timeline' && (
                       <div className="space-y-4">
-                        <h4 className="text-xs font-semibold uppercase text-[#7C8896] tracking-wider">
+                        <h4 className="text-xs font-bold uppercase text-[#64748B] tracking-wider">
                           Stage History & Log
                         </h4>
                         <div className="border-l-2 border-[#E2E8F0] pl-4 space-y-6">
                           {stageHistory.map((item, idx) => (
                             <div key={idx} className="relative">
-                              <span className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[#2563EB] ring-4 ring-white" />
-                              <p className="text-sm font-semibold text-[#0F172A]">
+                              <span className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[#2B59FF] ring-4 ring-white" />
+                              <p className="text-sm font-bold text-[#0F172A]">
                                 Moved to {item.stage}
                               </p>
-                              <p className="text-xs text-[#7C8896]">
+                              <p className="text-xs text-[#64748B]">
                                 {new Date(item.timestamp).toLocaleString(undefined, {
                                   month: 'short',
                                   day: 'numeric',
@@ -246,19 +263,19 @@ export const Drawer: React.FC<DrawerProps> = ({
                     {activeTab === 'prep' && (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-semibold uppercase text-[#7C8896] tracking-wider">
+                          <h4 className="text-xs font-bold uppercase text-[#64748B] tracking-wider">
                             AI Interview Questions
                           </h4>
                           <Badge variant="violet" size="sm">
                             Tech & System Design
                           </Badge>
                         </div>
-                        <div className="p-4 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] space-y-2">
-                          <p className="text-xs font-semibold text-[#7C3AED]">
-                            Generated Technical Question
+                        <div className="p-4 rounded-2xl bg-[#F5F3FF] border border-[#DDD6FE] space-y-2">
+                          <p className="text-xs font-bold text-[#7C3AED]">
+                            Targeted Role Question
                           </p>
-                          <p className="text-sm font-medium text-[#0F172A]">
-                            "How would you optimize data access and multi-tenant indexes for {companyName}'s architecture?"
+                          <p className="text-sm font-semibold text-[#0F172A]">
+                            "How would you optimize data access and multi-tenant scaling for {companyName}?"
                           </p>
                         </div>
                       </div>
@@ -266,17 +283,17 @@ export const Drawer: React.FC<DrawerProps> = ({
 
                     {activeTab === 'docs' && (
                       <div className="space-y-4">
-                        <h4 className="text-xs font-semibold uppercase text-[#7C8896] tracking-wider">
+                        <h4 className="text-xs font-bold uppercase text-[#64748B] tracking-wider">
                           Attached Documents
                         </h4>
-                        <div className="p-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-[#2563EB]" />
+                        <div className="p-3.5 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <FileText className="w-4 h-4 text-[#2B59FF]" />
                             <span className="text-sm font-medium text-[#0F172A]">
                               Resume_Tailored_{companyName.replace(/\s+/g, '')}.pdf
                             </span>
                           </div>
-                          <ExternalLink className="w-4 h-4 text-[#2563EB] cursor-pointer" />
+                          <ExternalLink className="w-4 h-4 text-[#2B59FF] cursor-pointer" />
                         </div>
                       </div>
                     )}

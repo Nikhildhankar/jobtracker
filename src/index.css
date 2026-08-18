@@ -28,8 +28,8 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
 }
 
@@ -72,7 +72,7 @@ a:hover {
 /* Standardized Page Container */
 .page-container {
   width: 100%;
-  max-width: 80rem; /* 1280px / max-w-7xl */
+  max-width: 82rem; /* 1312px */
   margin-left: auto;
   margin-right: auto;
   padding: 1.5rem;
@@ -98,13 +98,14 @@ a:hover {
 
 .page-header-title {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
-  line-height: 1.25;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
 .page-header-desc {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   margin-top: 0.25rem;
 }
@@ -149,9 +150,56 @@ a:hover {
 .input-tactile:focus {
   border-color: var(--border-focus);
   background-color: var(--surface-card);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(43, 89, 255, 0.15);
 }
 
 .input-tactile::placeholder {
   color: #94a3b8;
+}
+
+/* Simplify Table Styles */
+.simplify-table-wrapper {
+  background: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.simplify-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.simplify-th {
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+
+.simplify-tr {
+  transition: background-color 150ms ease;
+  cursor: pointer;
+}
+
+.simplify-tr:hover {
+  background-color: #f8fafc;
+}
+
+.simplify-tr:not(:last-child) .simplify-td {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.simplify-td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Building2, Briefcase, MapPin, DollarSign, Plus } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { CompanyAvatar } from '../ui/CompanyAvatar';
 import { useUI } from '../../context/useUI';
 import { api } from '../../services/api';
 
@@ -68,7 +69,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 md:p-10 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 md:p-10 flex items-center justify-center select-none">
         {/* Backdrop Overlay */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -86,17 +87,26 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
           className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] overflow-hidden z-10"
         >
-          {/* Header */}
+          {/* Header with Live Company Avatar */}
           <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center">
-                <Plus className="w-4 h-4" />
+            <div className="flex items-center gap-3">
+              {companyName ? (
+                <CompanyAvatar name={companyName} size="md" />
+              ) : (
+                <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] text-[#2B59FF] flex items-center justify-center font-bold text-sm">
+                  <Plus className="w-4 h-4" />
+                </div>
+              )}
+              <div>
+                <h2 className="text-base font-bold text-[#0F172A]">
+                  {companyName ? `Add ${companyName}` : 'New Job Application'}
+                </h2>
+                <p className="text-xs text-[#64748B]">Add a job to track in your search pipeline</p>
               </div>
-              <h2 className="text-base font-semibold text-[#0F172A]">New Job Application</h2>
             </div>
             <button
               onClick={() => setQuickAddOpen(false)}
-              className="p-1 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -105,14 +115,14 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
           {/* Form Content */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {error && (
-              <div className="p-3 rounded-xl bg-[#FFE4E6] border border-[#FECDD3] text-xs font-medium text-[#E11D48]">
+              <div className="p-3.5 rounded-xl bg-[#FFE4E6] border border-[#FECDD3] text-xs font-medium text-[#E11D48]">
                 {error}
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Company Name *</label>
+                <label className="text-xs font-bold text-[#0F172A]">Company Name *</label>
                 <div className="relative">
                   <Building2 className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
                   <input
@@ -120,14 +130,14 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
                     required
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Stripe, Vercel..."
-                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    placeholder="e.g. Stripe, OpenAI..."
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Role Title *</label>
+                <label className="text-xs font-bold text-[#0F172A]">Role Title *</label>
                 <div className="relative">
                   <Briefcase className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
                   <input
@@ -135,8 +145,8 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
                     required
                     value={roleTitle}
                     onChange={(e) => setRoleTitle(e.target.value)}
-                    placeholder="Senior Engineer..."
-                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    placeholder="e.g. Senior Software Engineer"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
                   />
                 </div>
               </div>
@@ -144,11 +154,11 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Pipeline Stage</label>
+                <label className="text-xs font-bold text-[#0F172A]">Pipeline Stage</label>
                 <select
                   value={stage}
                   onChange={(e) => setStage(e.target.value as any)}
-                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white cursor-pointer"
                 >
                   <option value="Wishlist">Wishlist</option>
                   <option value="Applied">Applied</option>
@@ -160,11 +170,11 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Work Model</label>
+                <label className="text-xs font-bold text-[#0F172A]">Work Model</label>
                 <select
                   value={workModel}
                   onChange={(e) => setWorkModel(e.target.value as any)}
-                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white cursor-pointer"
                 >
                   <option value="Remote">Remote</option>
                   <option value="Hybrid">Hybrid</option>
@@ -175,7 +185,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Location</label>
+                <label className="text-xs font-bold text-[#0F172A]">Location</label>
                 <div className="relative">
                   <MapPin className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
                   <input
@@ -183,26 +193,26 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="San Francisco, CA..."
-                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Source</label>
+                <label className="text-xs font-bold text-[#0F172A]">Source</label>
                 <input
                   type="text"
                   value={source}
                   onChange={(e) => setSource(e.target.value)}
-                  placeholder="LinkedIn, Referral..."
-                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                  placeholder="LinkedIn, Simplify, Referral..."
+                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Min Salary ($ / yr)</label>
+                <label className="text-xs font-bold text-[#0F172A]">Min Salary ($ / yr)</label>
                 <div className="relative">
                   <DollarSign className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
                   <input
@@ -210,42 +220,42 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
                     value={minSalary}
                     onChange={(e) => setMinSalary(e.target.value)}
                     placeholder="140000"
-                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-mono text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Max Salary ($ / yr)</label>
+                <label className="text-xs font-bold text-[#0F172A]">Max Salary ($ / yr)</label>
                 <div className="relative">
                   <DollarSign className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
                   <input
                     type="number"
                     value={maxSalary}
                     onChange={(e) => setMaxSalary(e.target.value)}
-                    placeholder="170000"
-                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    placeholder="180000"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-mono text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
                   />
                 </div>
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-[#0F172A]">Job Description (Optional)</label>
+              <label className="text-xs font-bold text-[#0F172A]">Job Description (Optional)</label>
               <textarea
                 rows={3}
                 value={jobDescriptionRaw}
                 onChange={(e) => setJobDescriptionRaw(e.target.value)}
-                placeholder="Paste raw JD text for ATS keyword extraction..."
-                className="w-full p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                placeholder="Paste raw JD text for ATS keyword extraction & AI question prep..."
+                className="w-full p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
               />
             </div>
 
             <div className="pt-2 flex items-center justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => setQuickAddOpen(false)}>
+              <Button type="button" variant="outline" size="sm" onClick={() => setQuickAddOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" variant="primary" isLoading={submitting}>
+              <Button type="submit" variant="primary" size="sm" isLoading={submitting} className="bg-[#2B59FF] hover:bg-[#1E46E6]">
                 Save Application
               </Button>
             </div>
