@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/useAuth';
-import { Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 import '../styles/login.css';
 
 export const AuthPage: React.FC = () => {
@@ -11,13 +11,17 @@ export const AuthPage: React.FC = () => {
   const [name, setName] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [debugMsg, setDebugMsg] = useState<string | null>(null);
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
 
+  const displayError = localError || error;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLocalError(null);
     setSubmitting(true);
     setDebugMsg(null);
 
@@ -30,8 +34,8 @@ export const AuthPage: React.FC = () => {
       } else {
         await login({ email, password });
       }
-    } catch {
-      // Handled in context
+    } catch (err: any) {
+      setLocalError(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setSubmitting(false);
     }
@@ -41,6 +45,7 @@ export const AuthPage: React.FC = () => {
     e.preventDefault();
     if (!forgotEmail) return;
     setSubmitting(true);
+    setLocalError(null);
     try {
       const res = await forgotPassword(forgotEmail);
       if (res?.debugResetLink) {
@@ -48,20 +53,23 @@ export const AuthPage: React.FC = () => {
       } else {
         setForgotSuccess('If the account exists, a reset link has been generated.');
       }
-    } catch {
-      // Handled in context
+    } catch (err: any) {
+      setLocalError(err.message || 'Failed to process password reset.');
     } finally {
       setSubmitting(false);
     }
   };
 
   const fillAndSubmitDemo = async () => {
+    setLocalError(null);
     setEmail('alex@example.com');
     setPassword('Password123!');
     setIsSignup(false);
     setSubmitting(true);
     try {
       await login({ email: 'alex@example.com', password: 'Password123!' });
+    } catch (err: any) {
+      setLocalError(err.message || 'Failed to sign in to demo account.');
     } finally {
       setSubmitting(false);
     }
@@ -81,7 +89,12 @@ export const AuthPage: React.FC = () => {
         <h2>{forgotOpen ? 'Reset Password' : isSignup ? 'Create Account' : 'Account Login'}</h2>
 
         {/* Error Alert */}
-        {error && <div className="login-alert-error">{error}</div>}
+        {displayError && (
+          <div className="login-alert-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={15} style={{ flexShrink: 0 }} />
+            <span>{displayError}</span>
+          </div>
+        )}
 
         {/* Success Alert */}
         {debugMsg && (
@@ -120,7 +133,13 @@ export const AuthPage: React.FC = () => {
             </button>
 
             <div className="signup-link" style={{ marginTop: '16px' }}>
-              <button type="button" onClick={() => setForgotOpen(false)}>
+              <button
+                type="button"
+                onClick={() => {
+                  setForgotOpen(false);
+                  setLocalError(null);
+                }}
+              >
                 Back to Sign In
               </button>
             </div>
@@ -188,6 +207,7 @@ export const AuthPage: React.FC = () => {
                     setForgotOpen(true);
                     setForgotEmail(email);
                     setForgotSuccess(null);
+                    setLocalError(null);
                   }}
                 >
                   Forgot Password?
@@ -202,7 +222,7 @@ export const AuthPage: React.FC = () => {
           </form>
         )}
 
-        {/* 1-Click Demo Login */}
+        {/* 1-Click Demo Login Button */}
         <button type="button" onClick={fillAndSubmitDemo} disabled={submitting} className="demo-helper-btn">
           <Sparkles size={14} />
           <span>1-Click Demo Login (Alex Hunter)</span>
@@ -218,6 +238,7 @@ export const AuthPage: React.FC = () => {
                 onClick={() => {
                   setIsSignup(false);
                   setDebugMsg(null);
+                  setLocalError(null);
                 }}
               >
                 Sign in here
@@ -231,6 +252,7 @@ export const AuthPage: React.FC = () => {
                 onClick={() => {
                   setIsSignup(true);
                   setDebugMsg(null);
+                  setLocalError(null);
                 }}
               >
                 Sign up here

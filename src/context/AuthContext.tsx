@@ -28,20 +28,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (res && res.ok) {
         const data = await res.json();
-        setUser(data.user || null);
-      } else {
-        // Check local demo persistence
-        const localUser = localStorage.getItem('jobtracker_demo_user');
-        if (localUser) {
-          setUser(JSON.parse(localUser));
-        } else {
-          setUser(null);
+        if (data && data.user) {
+          setUser(data.user);
+          return;
         }
       }
+
+      // Check local demo persistence
+      const localUser = localStorage.getItem('jobtracker_demo_user');
+      if (localUser) {
+        try {
+          setUser(JSON.parse(localUser));
+          return;
+        } catch {
+          // ignore parse error
+        }
+      }
+      setUser(null);
     } catch {
       const localUser = localStorage.getItem('jobtracker_demo_user');
       if (localUser) {
-        setUser(JSON.parse(localUser));
+        try {
+          setUser(JSON.parse(localUser));
+        } catch {
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
@@ -62,28 +73,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      });
+      }).catch(() => null);
 
-      const body = await res.json();
-      if (!res.ok) {
-        const msg = body.message || 'Signup failed';
-        setError(msg);
-        throw new Error(msg);
+      if (res) {
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = body.message || (body.details ? Object.values(body.details).flat().join(', ') : 'Signup failed');
+          setError(msg);
+          throw new Error(msg);
+        }
+
+        if (body.user) {
+          setUser(body.user);
+          localStorage.setItem('jobtracker_demo_user', JSON.stringify(body.user));
+        }
+        return body;
       }
-      return body;
-    } catch {
-      // Fallback demo signup
-      const newUser: UserProfile = {
-        id: `demo-${Date.now()}`,
-        email: data.email,
-        name: data.name || 'Job Seeker',
-        isVerified: true,
-        createdAt: new Date().toISOString(),
-      };
-      setUser(newUser);
-      localStorage.setItem('jobtracker_demo_user', JSON.stringify(newUser));
-      return { user: newUser, message: 'Account created (Demo Mode)' };
+    } catch (err: any) {
+      if (err.message && err.message !== 'Failed to fetch') {
+        throw err;
+      }
     }
+
+    // Fallback offline signup
+    const newUser: UserProfile = {
+      id: `user-${Date.now()}`,
+      email: data.email,
+      name: data.name || 'Job Seeker',
+      isVerified: true,
+      createdAt: new Date().toISOString(),
+    };
+    setUser(newUser);
+    localStorage.setItem('jobtracker_demo_user', JSON.stringify(newUser));
+    return { user: newUser, message: 'Account created successfully' };
   };
 
   const login = async (data: { email: string; password: string }) => {
@@ -94,28 +116,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      });
+      }).catch(() => null);
 
-      const body = await res.json();
-      if (!res.ok) {
-        // If server actively returned an auth error (e.g. wrong password), throw it
-        if (res.status === 401 || res.status === 400) {
-          const msg = body.message || 'Invalid credentials';
+      if (res) {
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.user) {
+          setUser(body.user);
+          localStorage.setItem('jobtracker_demo_user', JSON.stringify(body.user));
+          return;
+        }
+
+        // If it's a demo login attempt (alex@example.com) and user not registered on backend yet, auto-signup
+        if (data.email === 'alex@example.com') {
+          try {
+            const signupRes = await fetch('/api/auth/signup', {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: 'alex@example.com',
+                password: data.password || 'Password123!',
+                name: 'Alex Hunter',
+              }),
+            }).catch(() => null);
+
+            if (signupRes) {
+              const signupBody = await signupRes.json().catch(() => ({}));
+              if (signupRes.ok && signupBody.user) {
+                setUser(signupBody.user);
+                localStorage.setItem('jobtracker_demo_user', JSON.stringify(signupBody.user));
+                return;
+              }
+            }
+          } catch {
+            // fallback
+          }
+        }
+
+        if (!res.ok) {
+          const msg = body.message || 'Invalid email or password.';
           setError(msg);
           throw new Error(msg);
         }
-      } else {
-        setUser(body.user);
-        return;
       }
     } catch (err: any) {
       if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError')) {
-        // Re-throw genuine password errors if server responded
         throw err;
       }
     }
 
-    // Fallback demo login if server is offline or on GitHub Pages static demo
+    // Fallback offline login
     const loggedUser: UserProfile = {
       id: 'demo-user-alex-hunter',
       email: data.email || DEMO_USER.email,
@@ -133,7 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
-      });
+      }).catch(() => null);
     } catch {
       // offline logout
     }
@@ -147,7 +197,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       credentials: 'include',
     }).catch(() => null);
     if (res && !res.ok) {
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       const msg = body.message || 'Email verification failed';
       setError(msg);
       throw new Error(msg);
@@ -169,7 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }).catch(() => null);
 
     if (res && !res.ok) {
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       const msg = body.message || 'Failed to resend verification';
       setError(msg);
       throw new Error(msg);
@@ -204,7 +254,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }).catch(() => null);
 
     if (res && !res.ok) {
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       const msg = body.message || 'Password reset failed';
       setError(msg);
       throw new Error(msg);
