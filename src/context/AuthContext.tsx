@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }).catch(() => null);
 
       if (res && res.ok) {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (data && data.user) {
           setUser(data.user);
           return;
@@ -76,30 +76,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }).catch(() => null);
 
       if (res) {
-        const body = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          const msg = body.message || (body.details ? Object.values(body.details).flat().join(', ') : 'Signup failed');
-          setError(msg);
-          throw new Error(msg);
+        // If real backend returned 201 Created
+        if (res.ok) {
+          const body = await res.json().catch(() => ({}));
+          if (body.user) {
+            setUser(body.user);
+            localStorage.setItem('jobtracker_demo_user', JSON.stringify(body.user));
+          }
+          return body;
         }
 
-        if (body.user) {
-          setUser(body.user);
-          localStorage.setItem('jobtracker_demo_user', JSON.stringify(body.user));
+        // If backend returned genuine business validation error (400, 409) with a JSON message
+        if (res.status === 400 || res.status === 409) {
+          const body = await res.json().catch(() => ({}));
+          if (body.message) {
+            setError(body.message);
+            throw new Error(body.message);
+          }
         }
-        return body;
       }
     } catch (err: any) {
-      if (err.message && err.message !== 'Failed to fetch') {
+      if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('NetworkError')) {
         throw err;
       }
     }
 
-    // Fallback offline signup
+    // Static Hosting / GitHub Pages / Offline Fallback Mode
     const newUser: UserProfile = {
       id: `user-${Date.now()}`,
       email: data.email,
-      name: data.name || 'Job Seeker',
+      name: data.name || data.email.split('@')[0] || 'Job Seeker',
       isVerified: true,
       createdAt: new Date().toISOString(),
     };
@@ -119,14 +125,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }).catch(() => null);
 
       if (res) {
-        const body = await res.json().catch(() => ({}));
-        if (res.ok && body.user) {
-          setUser(body.user);
-          localStorage.setItem('jobtracker_demo_user', JSON.stringify(body.user));
-          return;
+        if (res.ok) {
+          const body = await res.json().catch(() => ({}));
+          if (body.user) {
+            setUser(body.user);
+            localStorage.setItem('jobtracker_demo_user', JSON.stringify(body.user));
+            return;
+          }
         }
 
-        // If it's a demo login attempt (alex@example.com) and user not registered on backend yet, auto-signup
+        // If it's a demo login attempt (alex@example.com) and user not in DB, auto-signup
         if (data.email === 'alex@example.com') {
           try {
             const signupRes = await fetch('/api/auth/signup', {
@@ -140,9 +148,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }),
             }).catch(() => null);
 
-            if (signupRes) {
+            if (signupRes && signupRes.ok) {
               const signupBody = await signupRes.json().catch(() => ({}));
-              if (signupRes.ok && signupBody.user) {
+              if (signupBody.user) {
                 setUser(signupBody.user);
                 localStorage.setItem('jobtracker_demo_user', JSON.stringify(signupBody.user));
                 return;
@@ -153,10 +161,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
 
-        if (!res.ok) {
-          const msg = body.message || 'Invalid email or password.';
-          setError(msg);
-          throw new Error(msg);
+        // If backend returned a genuine 401 with password/email error
+        if (res.status === 401) {
+          const body = await res.json().catch(() => ({}));
+          if (body.message && body.message !== 'Signup failed') {
+            setError(body.message);
+            throw new Error(body.message);
+          }
         }
       }
     } catch (err: any) {
@@ -165,9 +176,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    // Fallback offline login
+    // Static Hosting / GitHub Pages / Offline Fallback Mode
     const loggedUser: UserProfile = {
-      id: 'demo-user-alex-hunter',
+      id: data.email === 'alex@example.com' ? 'demo-user-alex-hunter' : `user-${Date.now()}`,
       email: data.email || DEMO_USER.email,
       name: data.email === 'alex@example.com' ? 'Alex Hunter' : data.email.split('@')[0],
       isVerified: true,
