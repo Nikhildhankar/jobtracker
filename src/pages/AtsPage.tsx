@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, FileText, SearchCheck } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { SegmentedTabs } from '../components/ui/SegmentedTabs';
 import { ResumeEditor } from '../components/ats/ResumeEditor';
 import { GapAnalysisView } from '../components/ats/GapAnalysisView';
 import { BulletRewriter } from '../components/ats/BulletRewriter';
@@ -66,33 +67,23 @@ export const AtsPage: React.FC = () => {
     ];
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="page-container">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-[#0F172A]">ATS Resume Optimizer & AI Rewriter</h1>
-          <p className="text-xs text-[#7C8896] mt-0.5">
+          <h1 className="page-header-title">ATS Resume Optimizer & AI Rewriter</h1>
+          <p className="page-header-desc">
             Extract target JD keywords, audit ATS parser safety, and rewrite bullet points truthfully.
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-white border border-[#E2E8F0] p-1 rounded-xl shadow-xs">
-          <button
-            onClick={() => setActiveTab('editor')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-              activeTab === 'editor' ? 'bg-[#2563EB] text-white' : 'text-[#64748B] hover:text-[#0F172A]'
-            }`}
-          >
-            Base Resume JSON
-          </button>
-          <button
-            onClick={() => setActiveTab('analysis')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-              activeTab === 'analysis' ? 'bg-[#2563EB] text-white' : 'text-[#64748B] hover:text-[#0F172A]'
-            }`}
-          >
-            ATS Audit & AI Gap Analysis
-          </button>
-        </div>
+        <SegmentedTabs
+          tabs={[
+            { id: 'editor', label: 'Base Resume JSON', icon: <FileText className="w-3.5 h-3.5" /> },
+            { id: 'analysis', label: 'ATS Audit & Gap Analysis', icon: <SearchCheck className="w-3.5 h-3.5" /> },
+          ]}
+          activeId={activeTab}
+          onChange={(id) => setActiveTab(id as any)}
+        />
       </div>
 
       {/* Target Job Selector Strip */}
@@ -109,7 +100,7 @@ export const AtsPage: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs text-[#7C8896]">Select Job from Pipeline</label>
+            <label className="text-xs font-semibold text-[#7C8896]">Select Job from Pipeline</label>
             <select
               value={selectedAppId}
               onChange={(e) => {
@@ -128,7 +119,7 @@ export const AtsPage: React.FC = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs text-[#7C8896]">Or Paste Raw Job Description Text</label>
+            <label className="text-xs font-semibold text-[#7C8896]">Or Paste Raw Job Description Text</label>
             <textarea
               rows={2}
               value={rawJdText}

@@ -61,13 +61,13 @@ export const DashboardPage: React.FC = () => {
   const hasApplications = stats && stats.totalAll > 0;
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="page-container">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-[#0F172A]">Job Hunt Overview</h1>
-          <p className="text-xs text-[#7C8896] mt-0.5">
-            Track applications, monitor conversion funnel, and respond to follow-up alerts.
+          <h1 className="page-header-title">Job Hunt Overview</h1>
+          <p className="page-header-desc">
+            Track active applications, monitor conversion funnel, and act on stale alerts.
           </p>
         </div>
         <Button variant="primary" icon={<Plus className="w-4 h-4" />} onClick={() => setQuickAddOpen(true)}>
@@ -170,7 +170,7 @@ export const DashboardPage: React.FC = () => {
                   <div
                     key={item.id}
                     onClick={() => openDrawer(item.applicationId)}
-                    className="py-3.5 flex items-center justify-between hover:bg-[#F8FAFC] px-3 rounded-lg transition-colors cursor-pointer"
+                    className="py-3.5 flex items-center justify-between hover:bg-[#F8FAFC] px-3 rounded-xl transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center font-bold text-[#2563EB]">
@@ -209,7 +209,7 @@ export const DashboardPage: React.FC = () => {
                 <div className="h-24 bg-[#F1F5F9] rounded-xl animate-pulse" />
               </div>
             ) : attention.length === 0 ? (
-              <div className="p-6 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-center space-y-1">
+              <div className="p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-center space-y-1">
                 <p className="text-xs font-semibold text-[#059669]">All Caught Up!</p>
                 <p className="text-[11px] text-[#059669]">No stale applications or urgent follow-ups today.</p>
               </div>
@@ -218,7 +218,7 @@ export const DashboardPage: React.FC = () => {
                 {attention.map((item) => (
                   <div
                     key={item.id}
-                    className={`p-3.5 rounded-xl border space-y-2 ${
+                    className={`p-4 rounded-2xl border space-y-2.5 ${
                       item.type === 'stale'
                         ? 'bg-[#FFF1F2] border-[#FECDD3]'
                         : 'bg-[#F5F3FF] border-[#DDD6FE]'
@@ -226,7 +226,7 @@ export const DashboardPage: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <span
-                        className={`text-xs font-semibold ${
+                        className={`text-xs font-bold ${
                           item.type === 'stale' ? 'text-[#E11D48]' : 'text-[#7C3AED]'
                         }`}
                       >

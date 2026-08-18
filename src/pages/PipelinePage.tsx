@@ -69,7 +69,7 @@ export const PipelinePage: React.FC = () => {
     { id: 'Screening', title: 'Screening' },
     { id: 'Interviewing', title: 'Interviewing' },
     { id: 'Offer', title: 'Offer Received' },
-    { id: 'Archived', title: 'Archived / Rejected' },
+    { id: 'Archived', title: 'Archived' },
   ];
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -120,12 +120,12 @@ export const PipelinePage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-[1600px] mx-auto flex flex-col h-[calc(100vh-4rem)]">
+    <div className="p-6 space-y-6 max-w-[1600px] mx-auto flex flex-col min-h-[calc(100vh-4rem)]">
       {/* Top Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-shrink-0">
+      <div className="page-header flex-shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-[#0F172A]">Pipeline Kanban</h1>
-          <p className="text-xs text-[#7C8896] mt-0.5">
+          <h1 className="page-header-title">Pipeline Kanban</h1>
+          <p className="page-header-desc">
             Drag applications across columns to record stage transitions in your timeline.
           </p>
         </div>
@@ -152,7 +152,7 @@ export const PipelinePage: React.FC = () => {
           ))}
         </div>
       ) : applications.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-12 bg-white border border-[#E2E8F0] rounded-2xl text-center space-y-4 shadow-sm">
+        <div className="flex-1 flex flex-col items-center justify-center p-12 bg-white border border-[#E2E8F0] rounded-2xl text-center space-y-4 shadow-sm my-auto">
           <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xl font-bold">
             <Sparkles className="w-6 h-6" />
           </div>

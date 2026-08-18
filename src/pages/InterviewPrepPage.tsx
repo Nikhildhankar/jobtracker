@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, MessageSquare, BookOpen } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { SegmentedTabs } from '../components/ui/SegmentedTabs';
 import { QuestionGenerator } from '../components/interview/QuestionGenerator';
 import { StarBuilder } from '../components/interview/StarBuilder';
 import { AnswerBank } from '../components/interview/AnswerBank';
@@ -49,33 +50,23 @@ export const InterviewPrepPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="page-container">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-[#0F172A]">AI Interview Coach & Answer Bank</h1>
-          <p className="text-xs text-[#7C8896] mt-0.5">
-            Generate role-specific technical & behavioral questions, build STAR answers, and maintain a reusable answer bank.
+          <h1 className="page-header-title">AI Interview Coach & Answer Bank</h1>
+          <p className="page-header-desc">
+            Generate role-specific questions, construct structured STAR answers, and maintain a reusable bank.
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-white border border-[#E2E8F0] p-1 rounded-xl shadow-xs">
-          <button
-            onClick={() => setActiveTab('practice')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-              activeTab === 'practice' ? 'bg-[#2563EB] text-white' : 'text-[#64748B] hover:text-[#0F172A]'
-            }`}
-          >
-            Practice Coaching
-          </button>
-          <button
-            onClick={() => setActiveTab('bank')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-              activeTab === 'bank' ? 'bg-[#2563EB] text-white' : 'text-[#64748B] hover:text-[#0F172A]'
-            }`}
-          >
-            Answer Bank ({answerBankItems.length})
-          </button>
-        </div>
+        <SegmentedTabs
+          tabs={[
+            { id: 'practice', label: 'Practice Coaching', icon: <MessageSquare className="w-3.5 h-3.5" /> },
+            { id: 'bank', label: `Answer Bank (${answerBankItems.length})`, icon: <BookOpen className="w-3.5 h-3.5" /> },
+          ]}
+          activeId={activeTab}
+          onChange={(id) => setActiveTab(id as any)}
+        />
       </div>
 
       {activeTab === 'practice' ? (

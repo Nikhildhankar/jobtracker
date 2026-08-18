@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useUI } from '../../context/useUI';
-import type { ActivePage } from '../../context/UIContext';
+import type { ActivePage } from '../../context/uiContextDef';
 
 export const Sidebar: React.FC = () => {
   const { sidebarCollapsed, toggleSidebar, activePage, setActivePage, stageCounts } = useUI();
@@ -67,7 +67,6 @@ export const Sidebar: React.FC = () => {
     >
       {/* Top Navigation Section */}
       <div className="p-3 space-y-4">
-        {/* Navigation Items */}
         <nav className="space-y-1">
           {navItems.map((item) => {
             const isActive = activePage === item.id;
@@ -90,12 +89,12 @@ export const Sidebar: React.FC = () => {
                   {!sidebarCollapsed && <span>{item.label}</span>}
                 </div>
 
-                {!sidebarCollapsed && typeof item.badgeCount === 'number' && (
+                {!sidebarCollapsed && typeof item.badgeCount === 'number' && item.badgeCount > 0 && (
                   <span
                     className={clsx(
-                      'px-2 py-0.5 text-[10px] font-mono rounded-full',
+                      'px-2 py-0.5 text-[10px] font-mono rounded-full font-bold',
                       item.alertBadge
-                        ? 'bg-[#FFE4E6] text-[#E11D48] font-bold'
+                        ? 'bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]'
                         : isActive
                         ? 'bg-[#EFF6FF] text-[#2563EB]'
                         : 'bg-[#E2E8F0] text-[#64748B]'
@@ -113,13 +112,13 @@ export const Sidebar: React.FC = () => {
       {/* Bottom Promo & Collapse Toggle */}
       <div className="p-3 border-t border-[#E2E8F0] space-y-3">
         {!sidebarCollapsed && (
-          <div className="p-3 rounded-xl bg-gradient-to-br from-[#EFF6FF] to-[#F5F3FF] border border-[#BFDBFE] space-y-2">
+          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-[#EFF6FF] to-[#F5F3FF] border border-[#BFDBFE] space-y-1.5 shadow-xs">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#2563EB]">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Gemini AI Assistant</span>
+              <span>Gemini AI Copilot</span>
             </div>
             <p className="text-[11px] text-[#475569] leading-relaxed">
-              Tailor resumes & generate target interview prep questions with AI.
+              Tailor resumes, analyze ATS keywords & practice interview loops.
             </p>
           </div>
         )}
@@ -127,7 +126,7 @@ export const Sidebar: React.FC = () => {
         {/* Collapse Sidebar Toggle */}
         <button
           onClick={toggleSidebar}
-          className="w-full flex items-center justify-center p-2 rounded-lg border border-[#E2E8F0] bg-white text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center p-2 rounded-xl border border-[#E2E8F0] bg-white text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer shadow-xs"
         >
           {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
