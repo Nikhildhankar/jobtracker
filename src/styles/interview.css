@@ -1,0 +1,64 @@
+/* AI Interview Prep & STAR Method Builder Styles */
+
+.interview-question-box {
+  padding: 20px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: var(--transition-spring);
+}
+
+.interview-question-box:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.star-builder-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .star-builder-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.star-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.star-input-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  resize: vertical;
+  transition: all 150ms ease;
+  min-height: 80px;
+}
+
+.star-textarea:focus {
+  background-color: var(--surface-card);
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(43, 89, 255, 0.12);
+}

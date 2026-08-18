@@ -1,4 +1,11 @@
 @import './styles/tokens.css';
+@import './styles/shell.css';
+@import './styles/dashboard.css';
+@import './styles/pipeline.css';
+@import './styles/ats.css';
+@import './styles/interview.css';
+@import './styles/action-center.css';
+@import './styles/modals.css';
 
 *,
 *::before,
