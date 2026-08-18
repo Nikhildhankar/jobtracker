@@ -144,9 +144,14 @@ PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 MONGODB_URI=mongodb://localhost:27017/jobtracker
-SESSION_SECRET=your_super_secret_key_min_32_chars
-GEMINI_API_KEY=your_gemini_api_key_here   # optional
+SESSION_SECRET=replace_with_random_32_byte_secret   # see tip below
+GEMINI_API_KEY=your_gemini_api_key_here              # optional
 ```
+
+> 💡 **Generate a secure `SESSION_SECRET`:**
+> ```bash
+> node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+> ```
 
 **4. Start the backend server**
 ```bash
