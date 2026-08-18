@@ -31,14 +31,14 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+    <div className="app-layout-root">
       {/* Top Navbar */}
       <Navbar />
 
       {/* Main Body with Sidebar + Active Page */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="app-main-layout">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto">{renderActivePage()}</main>
+        <main className="app-content-area">{renderActivePage()}</main>
       </div>
 
       {/* Slide-Over Drawer */}

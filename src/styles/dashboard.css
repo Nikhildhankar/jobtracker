@@ -1,20 +1,76 @@
-/* Dashboard & Job Search Insights Styles */
+/* Dashboard & Insights Command Center Styles */
 
-.dashboard-metrics-grid {
+.dashboard-page-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.dashboard-hero-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .dashboard-hero-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.dashboard-hero-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-hero-pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--stage-offer-bg);
+  color: var(--stage-offer);
+  border: 1px solid var(--stage-offer-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dashboard-hero-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Metrics Row */
+.metrics-cards-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
 @media (min-width: 768px) {
-  .dashboard-metrics-grid {
+  .metrics-cards-row {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-.dashboard-metric-card {
+.metric-kpi-card {
   padding: 20px;
-  background-color: var(--surface-card);
+  background-color: #ffffff;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xs);
@@ -24,51 +80,82 @@
   transition: var(--transition-spring);
 }
 
-.dashboard-metric-card:hover {
-  box-shadow: var(--shadow-sm);
+.metric-kpi-card:hover {
   border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
-.dashboard-metric-header {
+.metric-kpi-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.dashboard-metric-title {
+.metric-kpi-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.dashboard-metric-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-lg);
+.metric-kpi-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.dashboard-metric-body {
+.metric-kpi-bottom {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
 }
 
-.dashboard-metric-number {
+.metric-kpi-value {
   font-size: 30px;
   font-weight: 800;
-  color: var(--text-primary);
   font-family: var(--font-mono);
-  letter-spacing: -0.03em;
+  color: var(--text-primary);
   line-height: 1;
 }
 
-/* Pipeline Conversion Funnel Styles */
-.funnel-card {
+.metric-kpi-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* Dashboard Two-Column Layout */
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-main-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.dashboard-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* White Card Container */
+.dashboard-card-section {
   padding: 24px;
-  background-color: var(--surface-card);
+  background-color: #ffffff;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xs);
@@ -77,24 +164,31 @@
   gap: 16px;
 }
 
-.funnel-header {
+.dashboard-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.funnel-title {
+.dashboard-section-title {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.funnel-subtitle {
-  font-size: 12px;
-  color: var(--text-muted);
+/* Funnel Visualizer Component */
+.funnel-visualizer-box {
+  padding: 24px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.funnel-progress-track {
+.funnel-progress-bar {
   height: 12px;
   width: 100%;
   background-color: var(--surface-subtle);
@@ -104,25 +198,25 @@
   gap: 2px;
 }
 
-.funnel-stage-chips-grid {
+.funnel-grid-pills {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
 @media (min-width: 640px) {
-  .funnel-stage-chips-grid {
+  .funnel-grid-pills {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  .funnel-stage-chips-grid {
+  .funnel-grid-pills {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
-.funnel-stage-chip {
+.funnel-pill-card {
   padding: 12px 10px;
   border-radius: var(--radius-lg);
   border: 1px solid;
@@ -133,6 +227,6 @@
   transition: transform 150ms ease;
 }
 
-.funnel-stage-chip:hover {
+.funnel-pill-card:hover {
   transform: translateY(-2px);
 }

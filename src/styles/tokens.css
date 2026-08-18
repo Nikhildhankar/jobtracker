@@ -1,70 +1,72 @@
+/* JobTracker Design System Tokens (DESIGN_SYSTEM.md) */
 :root {
-  /* Core Simplify-Inspired Canvas & Surfaces */
-  --bg-canvas: #F8FAFC;
-  --surface-card: #FFFFFF;
-  --surface-subtle: #F1F5F9;
-  --surface-hover: #F8FAFC;
-  --surface-active: #E2E8F0;
+  /* Core Canvas & Surfaces */
+  --bg-canvas: #f8fafc;
+  --surface-card: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --surface-hover: #f8fafc;
+  --surface-active: #e2e8f0;
   --surface-overlay: rgba(15, 23, 42, 0.4);
 
-  /* Typography & Content Colors */
-  --text-primary: #0F172A;
+  /* Typography Colors */
+  --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-muted: #64748B;
-  --text-inverted: #FFFFFF;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --text-inverted: #ffffff;
 
-  /* Borders & Focus */
-  --border-default: #E2E8F0;
-  --border-subtle: #F1F5F9;
-  --border-strong: #CBD5E1;
-  --border-focus: #2B59FF;
+  /* Borders & Dividers */
+  --border-default: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-strong: #cbd5e1;
+  --border-focus: #2b59ff;
 
-  /* Simplify Brand Electric Indigo / Royal Blue */
-  --primary-blue: #2B59FF;
-  --primary-blue-hover: #1E46E6;
-  --primary-blue-subtle: rgba(43, 89, 255, 0.08);
-  --primary-blue-border: rgba(43, 89, 255, 0.22);
+  /* Brand Accents */
+  --primary-blue: #2b59ff;
+  --primary-blue-hover: #1e46e6;
+  --primary-blue-subtle: #eff6ff;
+  --primary-blue-border: #bfdbfe;
 
-  /* Semantic Pipeline Accents & Soft Tints (Simplify Style) */
-  --stage-wishlist: #64748B;
-  --stage-wishlist-bg: #F1F5F9;
-  --stage-wishlist-border: #E2E8F0;
+  /* Semantic Pipeline Stage Colors */
+  --stage-wishlist: #64748b;
+  --stage-wishlist-bg: #f1f5f9;
+  --stage-wishlist-border: #e2e8f0;
 
-  --stage-applied: #2563EB;
-  --stage-applied-bg: #EFF6FF;
-  --stage-applied-border: #BFDBFE;
+  --stage-applied: #2563eb;
+  --stage-applied-bg: #eff6ff;
+  --stage-applied-border: #bfdbfe;
 
-  --stage-screening: #D97706;
-  --stage-screening-bg: #FFFBEB;
-  --stage-screening-border: #FDE68A;
+  --stage-screening: #d97706;
+  --stage-screening-bg: #fffbeb;
+  --stage-screening-border: #fde68a;
 
-  --stage-interview: #7C3AED;
-  --stage-interview-bg: #F5F3FF;
-  --stage-interview-border: #DDD6FE;
+  --stage-interview: #7c3aed;
+  --stage-interview-bg: #f5f3ff;
+  --stage-interview-border: #ddd6fe;
 
   --stage-offer: #059669;
-  --stage-offer-bg: #ECFDF5;
-  --stage-offer-border: #A7F3D0;
+  --stage-offer-bg: #ecfdf5;
+  --stage-offer-border: #a7f3d0;
 
-  --stage-rejected: #E11D48;
-  --stage-rejected-bg: #FFF1F2;
-  --stage-rejected-border: #FECDD3;
+  --stage-rejected: #e11d48;
+  --stage-rejected-bg: #fff1f2;
+  --stage-rejected-border: #fecdd3;
 
-  --stage-archived: #71717A;
-  --stage-archived-bg: #F4F4F5;
-  --stage-archived-border: #E4E4E7;
+  --stage-archived: #71717a;
+  --stage-archived-bg: #f4f4f5;
+  --stage-archived-border: #e4e4e7;
 
   /* Diffused Soft Shadows */
   --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
   --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-  --shadow-card: 0 2px 4px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
-  --shadow-card-hover: 0 8px 16px -4px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+  --shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+  --shadow-card-hover: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
   --shadow-modal: 0 20px 25px -5px rgba(15, 23, 42, 0.10), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
   --shadow-dropdown: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
 
-  /* Tactile Button Shadows */
+  /* Button Shadows */
   --shadow-button-primary: 0 1px 2px 0 rgba(43, 89, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-  --shadow-button-secondary: 0 1px 2px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 0 #FFFFFF;
+  --shadow-button-secondary: 0 1px 2px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 0 #ffffff;
 
   /* Typography Families */
   --font-display: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

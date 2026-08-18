@@ -10,38 +10,36 @@ export const Navbar: React.FC = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   return (
-    <header className="h-16 border-b border-[#E2E8F0] bg-white sticky top-0 z-40 flex items-center justify-between px-6 shadow-[0_1px_2px_0_rgba(15,23,42,0.03)] select-none">
+    <header className="app-navbar">
       {/* Brand Logo & Title */}
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] flex items-center justify-center text-white font-bold text-sm shadow-[0_2px_4px_0_rgba(37,99,235,0.25)]">
-          JT
-        </div>
+      <div className="navbar-brand-group">
+        <div className="navbar-brand-badge">JT</div>
         <div>
-          <h1 className="text-sm font-bold text-[#0F172A] leading-tight">JobTracker</h1>
-          <p className="text-[11px] font-medium text-[#7C8896]">Pipeline & AI Copilot</p>
+          <h1 className="navbar-brand-title">JobTracker</h1>
+          <p className="navbar-brand-subtitle">Pipeline & AI Copilot</p>
         </div>
       </div>
 
       {/* Center Search Trigger (Cmd + K) */}
       <button
         onClick={() => setCommandPaletteOpen(true)}
-        className="w-full max-w-md hidden sm:flex items-center justify-between px-3.5 py-1.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-[#7C8896] hover:border-[#CBD5E1] hover:text-[#0F172A] transition-all cursor-pointer text-xs select-none shadow-[inset_0_1px_1px_0_rgba(15,23,42,0.03)]"
+        className="navbar-search-btn"
       >
-        <div className="flex items-center gap-2">
-          <Search className="w-3.5 h-3.5 text-[#94A3B8]" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Search size={14} color="#94A3B8" />
           <span>Search applications, companies, or commands...</span>
         </div>
-        <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-[#64748B] bg-white border border-[#E2E8F0] rounded-md shadow-xs">
+        <kbd style={{ padding: '2px 6px', fontSize: '10px', fontFamily: 'var(--font-mono)', color: '#64748B', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '4px' }}>
           ⌘K
         </kbd>
       </button>
 
       {/* Right User Controls & CTA */}
-      <div className="flex items-center gap-3">
+      <div className="navbar-actions">
         <Button
           variant="primary"
           size="sm"
-          icon={<Plus className="w-4 h-4" />}
+          icon={<Plus size={16} />}
           onClick={() => setQuickAddOpen(true)}
         >
           New Application
@@ -49,33 +47,33 @@ export const Navbar: React.FC = () => {
 
         {/* User Account Menu */}
         {user && (
-          <div className="relative">
+          <div style={{ position: 'relative' }}>
             <button
               onClick={() => setUserMenuOpen((prev) => !prev)}
-              className="flex items-center gap-2 p-1.5 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all cursor-pointer"
+              className="navbar-user-trigger"
             >
-              <div className="w-7 h-7 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] text-[#2563EB] font-bold text-xs flex items-center justify-center uppercase">
+              <div className="navbar-user-avatar">
                 {user.name ? user.name.charAt(0) : user.email.charAt(0)}
               </div>
-              <span className="text-xs font-medium text-[#0F172A] hidden md:inline max-w-[120px] truncate">
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.name || user.email}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8]" />
+              <ChevronDown size={14} color="#94A3B8" />
             </button>
 
             {userMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-[0_12px_24px_-4px_rgba(15,23,42,0.12),0_4px_6px_-2px_rgba(15,23,42,0.04)] border border-[#E2E8F0] p-3 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <div className="border-b border-[#E2E8F0] pb-2.5">
-                  <p className="text-xs font-semibold text-[#0F172A] truncate">{user.name || 'Job Seeker'}</p>
-                  <p className="text-xs text-[#7C8896] truncate">{user.email}</p>
-                  <div className="mt-2 flex items-center gap-1.5 text-[11px]">
+              <div style={{ position: 'absolute', right: 0, marginTop: '8px', width: '260px', backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0 12px 24px -4px rgba(15,23,42,0.12),0 4px 6px -2px rgba(15,23,42,0.04)', border: '1px solid #E2E8F0', padding: '14px', zIndex: 50, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '10px' }}>
+                  <p style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>{user.name || 'Job Seeker'}</p>
+                  <p style={{ fontSize: '12px', color: '#64748B' }}>{user.email}</p>
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px' }}>
                     {user.isVerified ? (
-                      <span className="inline-flex items-center gap-1 text-[#059669] font-medium bg-[#ECFDF5] px-2 py-0.5 rounded-full border border-[#A7F3D0]">
-                        <CheckCircle2 className="w-3 h-3" /> Verified Account
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#059669', fontWeight: 600, backgroundColor: '#ECFDF5', padding: '2px 8px', borderRadius: '9999px', border: '1px solid #A7F3D0' }}>
+                        <CheckCircle2 size={12} /> Verified Account
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[#D97706] font-medium bg-[#FFFBEB] px-2 py-0.5 rounded-full border border-[#FDE68A]">
-                        <AlertTriangle className="w-3 h-3" /> Unverified (Check Email)
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#D97706', fontWeight: 600, backgroundColor: '#FFFBEB', padding: '2px 8px', borderRadius: '9999px', border: '1px solid #FDE68A' }}>
+                        <AlertTriangle size={12} /> Unverified (Check Email)
                       </span>
                     )}
                   </div>
@@ -86,9 +84,9 @@ export const Navbar: React.FC = () => {
                     setUserMenuOpen(false);
                     logout();
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#E11D48] hover:bg-[#FFF1F2] transition-colors cursor-pointer"
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, color: '#E11D48', backgroundColor: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut size={16} />
                   Sign Out
                 </button>
               </div>

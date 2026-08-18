@@ -19,11 +19,11 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-md cursor-pointer transition-all duration-200 select-none outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.985]';
+    'inline-flex items-center justify-center font-semibold rounded-xl cursor-pointer transition-all duration-200 select-none outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.985]';
 
   const variantStyles = {
     primary:
-      'bg-[#2563EB] text-white hover:bg-[#1D4ED8] shadow-[0_1px_2px_0_rgba(37,99,235,0.25),inset_0_1px_0_0_rgba(255,255,255,0.2)] focus-visible:ring-[#2563EB]',
+      'bg-[#2B59FF] text-white hover:bg-[#1E46E6] shadow-[0_1px_2px_0_rgba(43,89,255,0.28),inset_0_1px_0_0_rgba(255,255,255,0.2)] focus-visible:ring-[#2B59FF]',
     secondary:
       'bg-white text-[#0F172A] border border-[#E2E8F0] hover:bg-[#F8FAFC] hover:border-[#CBD5E1] shadow-[0_1px_2px_0_rgba(15,23,42,0.05)] focus-visible:ring-[#2563EB]',
     outline:

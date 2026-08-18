@@ -72,36 +72,35 @@ export const DashboardPage: React.FC = () => {
   const hasApplications = stats && stats.totalAll > 0;
 
   return (
-    <div className="page-container select-none">
-      {/* Top Simplify Insights Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="dashboard-page-container">
+      {/* Top Hero Banner */}
+      <div className="dashboard-hero-header">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#0F172A] tracking-tight flex items-center gap-2">
+          <h1 className="dashboard-hero-title">
             <span>Job Search Insights</span>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0] flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> Live Analytics
+            <span className="dashboard-hero-pill">
+              <TrendingUp size={13} /> Live Analytics
             </span>
           </h1>
-          <p className="text-xs text-[#64748B] mt-0.5">
+          <p className="dashboard-hero-desc">
             Monitor conversion rates, response timelines, and stay on top of recruiter follow-ups.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setActivePage('pipeline')}
-            icon={<ArrowRight className="w-3.5 h-3.5" />}
+            icon={<ArrowRight size={14} />}
           >
             View Pipeline
           </Button>
           <Button
             variant="primary"
             size="sm"
-            icon={<Plus className="w-4 h-4" />}
+            icon={<Plus size={16} />}
             onClick={() => setQuickAddOpen(true)}
-            className="bg-[#2B59FF] hover:bg-[#1E46E6]"
           >
             New Application
           </Button>
@@ -110,156 +109,142 @@ export const DashboardPage: React.FC = () => {
 
       {/* Zero Applications Onboarding Banner */}
       {!loading && !hasApplications && (
-        <div className="p-8 rounded-2xl bg-gradient-to-br from-[#EFF6FF] via-white to-[#F5F3FF] border border-[#BFDBFE] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#BFDBFE] rounded-full text-xs font-bold text-[#2B59FF]">
-              <Sparkles className="w-3.5 h-3.5" /> Welcome to JobTracker
-            </div>
-            <h2 className="text-xl font-bold text-[#0F172A]">Start tracking your career pipeline</h2>
-            <p className="text-xs text-[#475569] max-w-lg leading-relaxed">
-              Add your target job applications to unlock ATS keyword optimization, automated stale follow-up alerts, and AI interview prep.
-            </p>
+        <div style={{ padding: '32px', borderRadius: '16px', background: 'linear-gradient(135deg, #EFF6FF, #ffffff, #F5F3FF)', border: '1px solid #BFDBFE', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: '#ffffff', border: '1px solid #BFDBFE', borderRadius: '9999px', fontSize: '12px', fontWeight: 700, color: 'var(--primary-blue)' }}>
+            <Sparkles size={14} /> Welcome to JobTracker
           </div>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0F172A' }}>Start tracking your career pipeline</h2>
+          <p style={{ fontSize: '13px', color: '#475569', maxWidth: '600px', lineHeight: 1.5 }}>
+            Add your target job applications to unlock ATS keyword optimization, automated stale follow-up alerts, and AI interview prep.
+          </p>
           <Button
             variant="primary"
-            size="lg"
-            icon={<FolderPlus className="w-5 h-5" />}
+            size="md"
+            icon={<FolderPlus size={18} />}
             onClick={() => setQuickAddOpen(true)}
-            className="bg-[#2B59FF] hover:bg-[#1E46E6]"
           >
             Add First Application
           </Button>
         </div>
       )}
 
-      {/* Simplify-Style Metrics Strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {/* Total Active Card */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#64748B]">Active Pipeline</span>
-            <div className="w-8 h-8 rounded-xl bg-[#EFF6FF] text-[#2B59FF] flex items-center justify-center">
-              <Briefcase className="w-4 h-4" />
+      {/* Metrics Row */}
+      <div className="metrics-cards-row">
+        {/* Active Pipeline */}
+        <div className="metric-kpi-card">
+          <div className="metric-kpi-top">
+            <span className="metric-kpi-label">Active Pipeline</span>
+            <div className="metric-kpi-icon-wrap" style={{ backgroundColor: '#EFF6FF', color: '#2B59FF' }}>
+              <Briefcase size={16} />
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-3xl font-extrabold text-[#0F172A] font-mono-tabular tracking-tight">
-              {stats ? stats.totalActive : 0}
-            </span>
+          <div className="metric-kpi-bottom">
+            <span className="metric-kpi-value">{stats ? stats.totalActive : 0}</span>
             {stats && stats.addedThisWeek > 0 && (
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#EFF6FF] text-[#2B59FF]">
+              <span className="metric-kpi-tag" style={{ backgroundColor: '#EFF6FF', color: '#2B59FF' }}>
                 +{stats.addedThisWeek} this week
               </span>
             )}
           </div>
         </div>
 
-        {/* Interviews Active */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#64748B]">Interview Loops</span>
-            <div className="w-8 h-8 rounded-xl bg-[#F5F3FF] text-[#7C3AED] flex items-center justify-center">
-              <Sparkles className="w-4 h-4" />
+        {/* Interview Loops */}
+        <div className="metric-kpi-card">
+          <div className="metric-kpi-top">
+            <span className="metric-kpi-label">Interview Loops</span>
+            <div className="metric-kpi-icon-wrap" style={{ backgroundColor: '#F5F3FF', color: '#7C3AED' }}>
+              <Sparkles size={16} />
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-3xl font-extrabold text-[#0F172A] font-mono-tabular tracking-tight">
-              {stageCounts.Interviewing}
-            </span>
-            <span className="text-[11px] font-medium text-[#7C3AED] bg-[#F5F3FF] px-2 py-0.5 rounded-full">
+          <div className="metric-kpi-bottom">
+            <span className="metric-kpi-value">{stageCounts.Interviewing}</span>
+            <span className="metric-kpi-tag" style={{ backgroundColor: '#F5F3FF', color: '#7C3AED' }}>
               In progress
             </span>
           </div>
         </div>
 
         {/* Response Rate */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#64748B]">Response Rate</span>
-            <div className="w-8 h-8 rounded-xl bg-[#ECFDF5] text-[#059669] flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" />
+        <div className="metric-kpi-card">
+          <div className="metric-kpi-top">
+            <span className="metric-kpi-label">Response Rate</span>
+            <div className="metric-kpi-icon-wrap" style={{ backgroundColor: '#ECFDF5', color: '#059669' }}>
+              <CheckCircle2 size={16} />
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-3xl font-extrabold text-[#0F172A] font-mono-tabular tracking-tight">
-              {stats ? `${stats.responseRatePct}%` : '0%'}
-            </span>
-            <span className="text-[11px] font-bold text-[#059669] bg-[#ECFDF5] px-2 py-0.5 rounded-full">
+          <div className="metric-kpi-bottom">
+            <span className="metric-kpi-value">{stats ? `${stats.responseRatePct}%` : '0%'}</span>
+            <span className="metric-kpi-tag" style={{ backgroundColor: '#ECFDF5', color: '#059669' }}>
               Avg {stats?.avgDaysToResponse || 7}d
             </span>
           </div>
         </div>
 
-        {/* Offers / Action Needed */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#64748B]">Offers Received</span>
-            <div className="w-8 h-8 rounded-xl bg-[#ECFDF5] text-[#059669] flex items-center justify-center">
-              <Award className="w-4 h-4" />
+        {/* Offers Received */}
+        <div className="metric-kpi-card">
+          <div className="metric-kpi-top">
+            <span className="metric-kpi-label">Offers Received</span>
+            <div className="metric-kpi-icon-wrap" style={{ backgroundColor: '#ECFDF5', color: '#059669' }}>
+              <Award size={16} />
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-3xl font-extrabold text-[#059669] font-mono-tabular tracking-tight">
-              {stageCounts.Offer}
-            </span>
+          <div className="metric-kpi-bottom">
+            <span className="metric-kpi-value" style={{ color: '#059669' }}>{stageCounts.Offer}</span>
             {attention.length > 0 && (
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#FFE4E6] text-[#E11D48] flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" /> {attention.length} Alert{attention.length > 1 ? 's' : ''}
+              <span className="metric-kpi-tag" style={{ backgroundColor: '#FFE4E6', color: '#E11D48', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <AlertCircle size={12} /> {attention.length} Alert{attention.length > 1 ? 's' : ''}
               </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Main Grid: Funnel Visualizer + Recent Activity + Follow-up Center */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Funnel & Recent Activity */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Pipeline Funnel Visualizer */}
+      {/* Main Grid: Funnel + Activity + Priority Action */}
+      <div className="dashboard-main-grid">
+        {/* Left Column: Funnel & Activity */}
+        <div className="dashboard-left-col">
           <FunnelVisualizer counts={stageCounts} isLoading={loading} />
 
-          {/* Recent Activity Feed */}
-          <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-[#0F172A]">Recent Pipeline Activity</h3>
+          {/* Activity Section */}
+          <div className="dashboard-card-section">
+            <div className="dashboard-section-header">
+              <h3 className="dashboard-section-title">Recent Pipeline Activity</h3>
               <button
                 onClick={() => setActivePage('pipeline')}
-                className="text-xs text-[#2B59FF] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+                style={{ fontSize: '12px', color: 'var(--primary-blue)', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
-                View all <ArrowRight className="w-3 h-3" />
+                View all <ArrowRight size={14} />
               </button>
             </div>
 
             {loading ? (
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="h-12 bg-[#F1F5F9] rounded-xl animate-pulse" />
+                  <div key={i} style={{ height: '48px', backgroundColor: '#F1F5F9', borderRadius: '12px' }} />
                 ))}
               </div>
             ) : activities.length === 0 ? (
-              <div className="p-8 text-center text-xs text-[#64748B]">
+              <div style={{ padding: '32px', textAlign: 'center', fontSize: '13px', color: '#64748B' }}>
                 No recent activity logged yet. Add applications or update stages to see activity history.
               </div>
             ) : (
-              <div className="divide-y divide-[#F1F5F9]">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {activities.map((item) => (
                   <div
                     key={item.id}
                     onClick={() => openDrawer(item.applicationId)}
-                    className="py-3 flex items-center justify-between hover:bg-[#F8FAFC] px-3 rounded-xl transition-colors cursor-pointer group"
+                    style={{ padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifySelf: 'stretch', justifyContent: 'space-between', cursor: 'pointer', transition: 'background-color 140ms ease' }}
                   >
-                    <div className="flex items-center gap-3">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <CompanyAvatar name={item.companyName} size="md" />
                       <div>
-                        <p className="text-sm font-bold text-[#0F172A] group-hover:text-[#2B59FF] transition-colors">
-                          {item.roleTitle}
-                        </p>
-                        <p className="text-xs font-medium text-[#64748B]">{item.companyName}</p>
+                        <p style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A' }}>{item.roleTitle}</p>
+                        <p style={{ fontSize: '12px', color: '#64748B' }}>{item.companyName}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <Badge stage={item.stage} size="sm" />
-                      <span className="text-xs text-[#94A3B8] font-mono-tabular">
+                      <span style={{ fontSize: '12px', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
                         {new Date(item.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </span>
                     </div>
@@ -270,73 +255,54 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Follow-up & Priority Attention */}
-        <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
-                <Zap className="w-4 h-4 text-[#D97706]" />
+        {/* Right Column: Priority Action & Attention */}
+        <div className="dashboard-right-col">
+          <div className="dashboard-card-section">
+            <div className="dashboard-section-header">
+              <h3 className="dashboard-section-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Zap size={16} color="#D97706" />
                 <span>Priority Action</span>
               </h3>
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#FFE4E6] text-[#E11D48]">
+              <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '9999px', backgroundColor: '#FFE4E6', color: '#E11D48' }}>
                 {attention.length} Alert{attention.length !== 1 ? 's' : ''}
               </span>
             </div>
 
             {loading ? (
-              <div className="space-y-3">
-                <div className="h-24 bg-[#F1F5F9] rounded-xl animate-pulse" />
-              </div>
+              <div style={{ height: '96px', backgroundColor: '#F1F5F9', borderRadius: '12px' }} />
             ) : attention.length === 0 ? (
-              <div className="p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-center space-y-1.5">
-                <p className="text-xs font-bold text-[#059669]">All Caught Up!</p>
-                <p className="text-[11px] text-[#059669]">No stale applications or urgent follow-ups today.</p>
+              <div style={{ padding: '24px', borderRadius: '16px', backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', textAlign: 'center' }}>
+                <p style={{ fontSize: '13px', fontWeight: 700, color: '#059669' }}>All Caught Up!</p>
+                <p style={{ fontSize: '12px', color: '#059669', marginTop: '2px' }}>No stale applications or urgent follow-ups today.</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {attention.slice(0, 4).map((item) => (
                   <div
                     key={item.id}
-                    className={`p-4 rounded-2xl border space-y-2.5 transition-all ${
-                      item.type === 'stale'
-                        ? 'bg-[#FFF1F2]/60 border-[#FECDD3] hover:border-[#E11D48]'
-                        : 'bg-[#F5F3FF]/60 border-[#DDD6FE] hover:border-[#7C3AED]'
-                    }`}
+                    style={{ padding: '16px', borderRadius: '16px', border: `1px solid ${item.type === 'stale' ? '#FECDD3' : '#DDD6FE'}`, backgroundColor: item.type === 'stale' ? '#FFF1F2' : '#F5F3FF', display: 'flex', flexDirection: 'column', gap: '10px' }}
                   >
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={`text-xs font-bold ${
-                          item.type === 'stale' ? 'text-[#E11D48]' : 'text-[#7C3AED]'
-                        }`}
-                      >
-                        {item.type === 'stale'
-                          ? `Stale > ${item.daysStale || 7} Days`
-                          : 'Upcoming Interview'}
+                    <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'stretch', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: item.type === 'stale' ? '#E11D48' : '#7C3AED' }}>
+                        {item.type === 'stale' ? `Stale > ${item.daysStale || 7} Days` : 'Upcoming Interview'}
                       </span>
-                      <span
-                        className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full ${
-                          item.type === 'stale' ? 'bg-[#FFE4E6] text-[#E11D48]' : 'bg-[#F5F3FF] text-[#7C3AED]'
-                        }`}
-                      >
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '9999px', backgroundColor: item.type === 'stale' ? '#FFE4E6' : '#F5F3FF', color: item.type === 'stale' ? '#E11D48' : '#7C3AED' }}>
                         {item.type === 'stale' ? 'Follow up' : 'In 48 hrs'}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2.5">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <CompanyAvatar name={item.companyName} size="sm" />
                       <div>
-                        <p className="text-sm font-bold text-[#0F172A]">{item.roleTitle}</p>
-                        <p className="text-xs text-[#64748B]">{item.companyName}</p>
+                        <p style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>{item.roleTitle}</p>
+                        <p style={{ fontSize: '11px', color: '#64748B' }}>{item.companyName}</p>
                       </div>
                     </div>
 
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="w-full mt-1 font-semibold"
-                      onClick={() =>
-                        openDrawer(item.id, item.type === 'stale' ? 'overview' : 'prep')
-                      }
+                      onClick={() => openDrawer(item.id, item.type === 'stale' ? 'overview' : 'prep')}
                     >
                       {item.type === 'stale' ? 'Draft Follow-up Email' : 'Review Prep Notes'}
                     </Button>
