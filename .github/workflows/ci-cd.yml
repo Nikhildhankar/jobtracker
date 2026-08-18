@@ -1,0 +1,85 @@
+name: JobTracker CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run OxLint
+        run: npm run lint
+
+      - name: Run TypeScript Compiler Check
+        run: npx tsc -b
+
+  integration-tests:
+    name: Automated Integration Tests
+    needs: lint-and-typecheck
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run All Integration Test Suites
+        env:
+          PORT: 5000
+          NODE_ENV: test
+          MONGODB_URI: mongodb://localhost:27017/jobtracker_test
+          SESSION_SECRET: test_session_secret_32_bytes_super_secure
+        run: npm run test:all
+
+  build-and-docker-sanity:
+    name: Production Build & Docker Sanity
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Production Client Build
+        run: npm run build
+
+      - name: Build Docker Container Image
+        run: docker build -t jobtracker:latest .
