@@ -183,10 +183,16 @@ export const AuthPage: React.FC = () => {
                 id="password"
                 name="password"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder={isSignup ? 'Create a password (min. 8 chars)' : 'Enter your password'}
               />
+              {isSignup && (
+                <span style={{ fontSize: '11px', color: '#888888', marginTop: '4px', display: 'block' }}>
+                  Must be at least 8 characters long
+                </span>
+              )}
             </div>
 
             {/* Secondary Actions: Remember Me + Forgot Password */}

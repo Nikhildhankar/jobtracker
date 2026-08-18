@@ -31,8 +31,10 @@ export const authController = {
     try {
       const parseResult = signupSchema.safeParse(req.body);
       if (!parseResult.success) {
+        const firstError = Object.values(parseResult.error.flatten().fieldErrors).flat()[0] || 'Please provide valid signup details';
         return res.status(400).json({
           error: 'ValidationError',
+          message: firstError,
           details: parseResult.error.flatten().fieldErrors,
         });
       }
