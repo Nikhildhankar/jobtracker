@@ -58,29 +58,34 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  const fillDemoCredentials = () => {
+  const fillAndSubmitDemo = async () => {
     setEmail('alex@example.com');
     setPassword('Password123!');
     setActiveTab('signin');
-    setDebugMsg(null);
+    setSubmitting(true);
+    try {
+      await login({ email: 'alex@example.com', password: 'Password123!' });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center items-center p-4 sm:p-6 select-none">
       {/* Brand Header */}
       <div className="text-center mb-6 space-y-2 max-w-sm">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] text-white font-bold text-xl flex items-center justify-center mx-auto shadow-[0_4px_12px_0_rgba(37,99,235,0.3)]">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#2B59FF] to-[#1E46E6] text-white font-bold text-xl flex items-center justify-center mx-auto shadow-[0_4px_12px_0_rgba(43,89,255,0.3)]">
           JT
         </div>
-        <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">JobTracker</h1>
-        <p className="text-xs text-[#7C8896]">
+        <h1 className="text-2xl font-extrabold text-[#0F172A] tracking-tight">JobTracker</h1>
+        <p className="text-xs text-[#64748B]">
           AI-Powered Career Pipeline, ATS Resume Audit & Interview Prep
         </p>
       </div>
 
-      {/* Main Authentication Window Card */}
-      <div className="w-full max-w-md bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.08),0_8px_10px_-6px_rgba(15,23,42,0.03)] space-y-6">
-        {/* Animated Segmented Tabs */}
+      {/* Main Authentication Card */}
+      <div className="w-full max-w-md bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 shadow-[0_12px_24px_-4px_rgba(15,23,42,0.08),0_4px_6px_-2px_rgba(15,23,42,0.03)] space-y-5">
+        {/* Segmented Tabs */}
         <SegmentedTabs
           tabs={[
             { id: 'signin', label: 'Sign In' },
@@ -97,15 +102,15 @@ export const AuthPage: React.FC = () => {
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-xl bg-[#FFE4E6] border border-[#FECDD3] text-xs font-medium text-[#E11D48] flex items-start gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#E11D48] mt-1.5 flex-shrink-0" />
+          <div className="p-3 rounded-xl bg-[#FFE4E6] border border-[#FECDD3] text-xs font-medium text-[#E11D48] flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E11D48] flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        {/* Debug Verification Banner */}
+        {/* Debug Banner */}
         {debugMsg && (
-          <div className="p-3.5 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-mono text-[#2563EB] break-all space-y-1">
+          <div className="p-3.5 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-mono text-[#2B59FF] break-all space-y-1">
             <div className="flex items-center gap-1.5 font-bold">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Registration Successful</span>
@@ -114,21 +119,21 @@ export const AuthPage: React.FC = () => {
           </div>
         )}
 
-        {/* Forgot Password Sub-View */}
+        {/* Forgot Password Flow */}
         {forgotOpen ? (
           <form onSubmit={handleForgotPassword} className="space-y-4">
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[#0F172A]">Reset Password</label>
+                <label className="text-xs font-bold text-[#0F172A]">Reset Password</label>
                 <button
                   type="button"
                   onClick={() => setForgotOpen(false)}
-                  className="text-xs text-[#2563EB] hover:underline"
+                  className="text-xs text-[#2B59FF] hover:underline font-semibold cursor-pointer"
                 >
                   Back to Sign In
                 </button>
               </div>
-              <p className="text-xs text-[#7C8896]">
+              <p className="text-xs text-[#64748B]">
                 Enter your account email to receive a password reset token.
               </p>
             </div>
@@ -151,7 +156,11 @@ export const AuthPage: React.FC = () => {
               </div>
             )}
 
-            <Button variant="primary" className="w-full py-2.5" isLoading={submitting}>
+            <Button
+              variant="primary"
+              className="w-full py-2.5 bg-[#2B59FF] hover:bg-[#1E46E6] font-semibold"
+              isLoading={submitting}
+            >
               Send Reset Link
             </Button>
           </form>
@@ -160,7 +169,7 @@ export const AuthPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignup && (
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#0F172A]">Full Name</label>
+                <label className="text-xs font-bold text-[#0F172A]">Full Name</label>
                 <div className="relative">
                   <UserIcon className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-3" />
                   <input
@@ -176,7 +185,7 @@ export const AuthPage: React.FC = () => {
             )}
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-[#0F172A]">Email Address</label>
+              <label className="text-xs font-bold text-[#0F172A]">Email Address</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-3" />
                 <input
@@ -192,7 +201,7 @@ export const AuthPage: React.FC = () => {
 
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[#0F172A]">Password</label>
+                <label className="text-xs font-bold text-[#0F172A]">Password</label>
                 {!isSignup && (
                   <button
                     type="button"
@@ -201,7 +210,7 @@ export const AuthPage: React.FC = () => {
                       setForgotEmail(email);
                       setForgotSuccess(null);
                     }}
-                    className="text-xs text-[#2563EB] hover:underline font-medium cursor-pointer"
+                    className="text-xs text-[#2B59FF] hover:underline font-semibold cursor-pointer"
                   >
                     Forgot password?
                   </button>
@@ -229,7 +238,7 @@ export const AuthPage: React.FC = () => {
 
             <Button
               variant="primary"
-              className="w-full py-2.5 font-semibold text-sm shadow-[0_1px_2px_0_rgba(37,99,235,0.25),inset_0_1px_0_0_rgba(255,255,255,0.2)]"
+              className="w-full py-2.5 font-bold text-sm bg-[#2B59FF] hover:bg-[#1E46E6] shadow-[0_1px_2px_0_rgba(43,89,255,0.28)]"
               isLoading={submitting}
               icon={<ArrowRight className="w-4 h-4" />}
             >
@@ -238,22 +247,22 @@ export const AuthPage: React.FC = () => {
           </form>
         )}
 
-        {/* Demo Quick-Fill Helper Button */}
+        {/* 1-Click Demo Login Button */}
         <div className="pt-2 border-t border-[#F1F5F9] flex items-center justify-center">
           <button
             type="button"
-            onClick={fillDemoCredentials}
-            className="inline-flex items-center gap-1.5 text-xs text-[#64748B] hover:text-[#2563EB] bg-[#F8FAFC] hover:bg-[#EFF6FF] border border-[#E2E8F0] hover:border-[#BFDBFE] px-3 py-1.5 rounded-full transition-all cursor-pointer font-medium"
+            onClick={fillAndSubmitDemo}
+            className="w-full flex items-center justify-center gap-2 text-xs text-[#2B59FF] hover:text-[#1E46E6] bg-[#EFF6FF] hover:bg-[#DBEAFE] border border-[#BFDBFE] px-3.5 py-2 rounded-xl transition-all cursor-pointer font-bold shadow-2xs"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#2563EB]" />
-            <span>Use Demo Account (Alex Hunter)</span>
+            <Sparkles className="w-4 h-4 text-[#2B59FF]" />
+            <span>1-Click Demo Sign In (Alex Hunter)</span>
           </button>
         </div>
       </div>
 
       {/* Footer Info */}
-      <div className="mt-8 text-center text-xs text-[#7C8896] space-y-1">
-        <p>JobTracker • Career Pipeline & AI Copilot</p>
+      <div className="mt-6 text-center text-xs text-[#64748B] space-y-1">
+        <p className="font-semibold text-[#0F172A]">JobTracker • Career Pipeline & AI Copilot</p>
         <p className="text-[11px] text-[#94A3B8]">Secured with custom session tokens & HTTP-only cookies</p>
       </div>
     </div>
