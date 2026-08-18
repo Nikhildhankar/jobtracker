@@ -2,6 +2,7 @@ import http from 'http';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { app } from '../server/app';
+import { connectDB } from '../server/db/connect';
 import { User } from '../server/models/User';
 import { Session } from '../server/models/Session';
 import { InterviewPrep } from '../server/models/InterviewPrep';
@@ -13,6 +14,15 @@ let baseUrl: string;
 let mongod: MongoMemoryServer | null = null;
 
 async function setupTestDB() {
+  try {
+    const conn = await connectDB();
+    if (conn.connection.readyState === 1) {
+      return;
+    }
+  } catch {
+    // fallback
+  }
+
   try {
     mongod = await MongoMemoryServer.create();
     const uri = mongod.getUri();
