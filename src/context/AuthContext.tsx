@@ -14,6 +14,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       setError(null);
       const res = await fetch('/api/auth/me', {
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
@@ -55,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     const res = await fetch('/api/auth/login', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
@@ -73,13 +76,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     await fetch('/api/auth/logout', {
       method: 'POST',
+      credentials: 'include',
     });
     setUser(null);
   };
 
   const verifyEmail = async (token: string) => {
     setError(null);
-    const res = await fetch(`/api/auth/verify?token=${encodeURIComponent(token)}`);
+    const res = await fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}`, {
+      credentials: 'include',
+    });
     const body = await res.json();
     if (!res.ok) {
       const msg = body.message || 'Email verification failed';
@@ -92,6 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     const res = await fetch('/api/auth/resend-verification', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
@@ -108,6 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     const res = await fetch('/api/auth/forgot-password', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
@@ -125,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     const res = await fetch('/api/auth/reset-password', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });

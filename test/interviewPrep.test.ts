@@ -216,8 +216,10 @@ async function runInterviewPrepTests() {
   }
 }
 
-runInterviewPrepTests().catch(async (err) => {
-  console.error('\n❌ Interview Prep Test Suite Failed:', err);
-  await teardownTestDB();
-  process.exit(1);
-});
+runInterviewPrepTests()
+  .then(() => process.exit(0))
+  .catch(async (err) => {
+    console.error('\n❌ Interview Prep Test Suite Failed:', err);
+    await teardownTestDB();
+    process.exit(1);
+  });

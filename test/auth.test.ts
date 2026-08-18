@@ -247,8 +247,10 @@ async function runAuthTests() {
   }
 }
 
-runAuthTests().catch(async (err) => {
-  console.error('\n❌ Auth Test Suite Failed:', err);
-  await teardownTestDB();
-  process.exit(1);
-});
+runAuthTests()
+  .then(() => process.exit(0))
+  .catch(async (err) => {
+    console.error('\n❌ Auth Test Suite Failed:', err);
+    await teardownTestDB();
+    process.exit(1);
+  });

@@ -79,7 +79,7 @@ export interface ApplicationData {
 
 export const api = {
   async getDashboardStats(): Promise<DashboardStats> {
-    const res = await fetch('/api/dashboard/stats');
+    const res = await fetch('/api/dashboard/stats', { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch dashboard stats');
     return res.json();
   },
@@ -89,25 +89,25 @@ export const api = {
     staleApplications: AttentionItem[];
     upcomingInterviews: AttentionItem[];
   }> {
-    const res = await fetch('/api/dashboard/attention');
+    const res = await fetch('/api/dashboard/attention', { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch attention items');
     return res.json();
   },
 
   async getDashboardActivity(): Promise<{ activity: ActivityItem[] }> {
-    const res = await fetch('/api/dashboard/activity');
+    const res = await fetch('/api/dashboard/activity', { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch activity feed');
     return res.json();
   },
 
   async getApplications(): Promise<{ applications: ApplicationData[] }> {
-    const res = await fetch('/api/applications');
+    const res = await fetch('/api/applications', { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch applications');
     return res.json();
   },
 
   async getApplicationById(id: string): Promise<{ application: ApplicationData }> {
-    const res = await fetch(`/api/applications/${id}`);
+    const res = await fetch(`/api/applications/${id}`, { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch application');
     return res.json();
   },
@@ -115,6 +115,7 @@ export const api = {
   async createApplication(data: Partial<ApplicationData>): Promise<{ application: ApplicationData }> {
     const res = await fetch('/api/applications', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
@@ -125,6 +126,7 @@ export const api = {
   async updateApplicationStage(id: string, stage: string, notes?: string): Promise<{ application: ApplicationData }> {
     const res = await fetch(`/api/applications/${id}/stage`, {
       method: 'PATCH',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ stage, notes }),
     });
@@ -135,6 +137,7 @@ export const api = {
   async updateApplication(id: string, data: Partial<ApplicationData>): Promise<{ application: ApplicationData }> {
     const res = await fetch(`/api/applications/${id}`, {
       method: 'PATCH',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
@@ -145,12 +148,13 @@ export const api = {
   async deleteApplication(id: string): Promise<void> {
     const res = await fetch(`/api/applications/${id}`, {
       method: 'DELETE',
+      credentials: 'include',
     });
     if (!res.ok) throw new Error('Failed to delete application');
   },
 
   async getBaseResume(): Promise<{ resume: any }> {
-    const res = await fetch('/api/resumes/base');
+    const res = await fetch('/api/resumes/base', { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch base resume');
     return res.json();
   },
@@ -158,6 +162,7 @@ export const api = {
   async updateBaseResume(sections: any): Promise<{ resume: any }> {
     const res = await fetch('/api/resumes/base', {
       method: 'PUT',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sections }),
     });
@@ -168,6 +173,7 @@ export const api = {
   async analyzeJob(applicationId?: string, jobDescriptionText?: string): Promise<{ analysis: any }> {
     const res = await fetch('/api/ats/analyze', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ applicationId, jobDescriptionText }),
     });
@@ -181,6 +187,7 @@ export const api = {
   async rewriteBullet(originalBullet: string, missingKeywords: string[], roleContext?: string): Promise<{ suggestion: any }> {
     const res = await fetch('/api/ats/rewrite-bullet', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ originalBullet, missingKeywords, roleContext }),
     });
@@ -196,6 +203,7 @@ export const api = {
   }): Promise<{ companyName: string; roleTitle: string; questions: any[] }> {
     const res = await fetch('/api/interview-prep/generate', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
@@ -206,6 +214,7 @@ export const api = {
   async reviewStarAnswer(question: string, star: { situation: string; task?: string; action: string; result?: string }): Promise<{ critique: any }> {
     const res = await fetch('/api/interview-prep/review-star', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question, star }),
     });
@@ -214,7 +223,7 @@ export const api = {
   },
 
   async getAnswerBank(): Promise<{ answerBank: any[] }> {
-    const res = await fetch('/api/interview-prep');
+    const res = await fetch('/api/interview-prep', { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch answer bank');
     return res.json();
   },
@@ -222,6 +231,7 @@ export const api = {
   async saveAnswer(data: any): Promise<{ entry: any }> {
     const res = await fetch('/api/interview-prep/save', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
@@ -232,6 +242,7 @@ export const api = {
   async deleteAnswer(id: string): Promise<void> {
     const res = await fetch(`/api/interview-prep/${id}`, {
       method: 'DELETE',
+      credentials: 'include',
     });
     if (!res.ok) throw new Error('Failed to delete answer');
   },
@@ -241,7 +252,7 @@ export const api = {
     staleApplications: AttentionItem[];
     upcomingInterviews: AttentionItem[];
   }> {
-    const res = await fetch('/api/action-center/items');
+    const res = await fetch('/api/action-center/items', { credentials: 'include' });
     if (!res.ok) throw new Error('Failed to fetch action center items');
     return res.json();
   },
@@ -249,6 +260,7 @@ export const api = {
   async draftFollowupEmail(applicationId: string, customNotes?: string): Promise<{ companyName: string; roleTitle: string; contact?: any; draft: { subject: string; body: string } }> {
     const res = await fetch('/api/action-center/draft-email', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ applicationId, customNotes }),
     });
@@ -259,6 +271,7 @@ export const api = {
   async markFollowedUp(applicationId: string, notes?: string): Promise<{ application: ApplicationData }> {
     const res = await fetch('/api/action-center/mark-followed-up', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ applicationId, notes }),
     });

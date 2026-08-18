@@ -234,8 +234,10 @@ async function runDashboardTests() {
   }
 }
 
-runDashboardTests().catch(async (err) => {
-  console.error('\n❌ Dashboard Test Suite Failed:', err);
-  await teardownTestDB();
-  process.exit(1);
-});
+runDashboardTests()
+  .then(() => process.exit(0))
+  .catch(async (err) => {
+    console.error('\n❌ Dashboard Test Suite Failed:', err);
+    await teardownTestDB();
+    process.exit(1);
+  });

@@ -45,7 +45,9 @@ async function runTests() {
   console.log('\n🎉 ALL PHASE 1 TESTS PASSED SUCCESSFULLY!\n');
 }
 
-runTests().catch((err) => {
-  console.error('\n❌ Test Suite Failed:', err);
-  process.exit(1);
-});
+runTests()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error('\n❌ Test Suite Failed:', err);
+    process.exit(1);
+  });

@@ -210,8 +210,10 @@ async function runApplicationTests() {
   }
 }
 
-runApplicationTests().catch(async (err) => {
-  console.error('\n❌ Application Test Suite Failed:', err);
-  await teardownTestDB();
-  process.exit(1);
-});
+runApplicationTests()
+  .then(() => process.exit(0))
+  .catch(async (err) => {
+    console.error('\n❌ Application Test Suite Failed:', err);
+    await teardownTestDB();
+    process.exit(1);
+  });

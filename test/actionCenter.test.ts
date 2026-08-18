@@ -216,8 +216,10 @@ async function runActionCenterTests() {
   }
 }
 
-runActionCenterTests().catch(async (err) => {
-  console.error('\n❌ Action Center Test Suite Failed:', err);
-  await teardownTestDB();
-  process.exit(1);
-});
+runActionCenterTests()
+  .then(() => process.exit(0))
+  .catch(async (err) => {
+    console.error('\n❌ Action Center Test Suite Failed:', err);
+    await teardownTestDB();
+    process.exit(1);
+  });
