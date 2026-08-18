@@ -4,7 +4,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { StaleCard } from '../components/action/StaleCard';
 import { EmailDrafterModal } from '../components/action/EmailDrafterModal';
-import { useUI } from '../context/UIContext';
+import { useUI } from '../context/useUI';
 import { api } from '../services/api';
 import type { AttentionItem } from '../services/api';
 

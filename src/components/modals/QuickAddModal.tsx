@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Building2, Briefcase, MapPin, DollarSign, Plus } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { useUI } from '../../context/UIContext';
+import { useUI } from '../../context/useUI';
 import { api } from '../../services/api';
 
 export interface QuickAddModalProps {

@@ -4,7 +4,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { StatCard } from '../components/dashboard/StatCard';
 import { FunnelVisualizer } from '../components/dashboard/FunnelVisualizer';
-import { useUI } from '../context/UIContext';
+import { useUI } from '../context/useUI';
 import { api } from '../services/api';
 import type { DashboardStats, AttentionItem, ActivityItem } from '../services/api';
 

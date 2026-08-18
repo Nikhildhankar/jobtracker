@@ -1,6 +1,7 @@
 import React from 'react';
 import { MotionConfig } from 'motion/react';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
 import { UIProvider } from './context/UIContext';
 import { AppLayout } from './components/shell/AppLayout';
 import { AuthPage } from './pages/AuthPage';

@@ -1,27 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { AuthContext } from './authContextDef';
+import type { UserProfile } from './authContextDef';
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  name?: string;
-  isVerified: boolean;
-}
-
-interface AuthContextType {
-  user: UserProfile | null;
-  loading: boolean;
-  error: string | null;
-  signup: (data: { email: string; password: string; name?: string }) => Promise<any>;
-  login: (data: { email: string; password: string }) => Promise<void>;
-  logout: () => Promise<void>;
-  verifyEmail: (token: string) => Promise<void>;
-  resendVerification: (email: string) => Promise<void>;
-  forgotPassword: (email: string) => Promise<any>;
-  resetPassword: (data: { token: string; password: string }) => Promise<void>;
-  refreshUser: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export type { UserProfile, AuthContextType } from './authContextDef';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -61,17 +42,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify(data),
     });
 
-    const json = await res.json();
+    const body = await res.json();
     if (!res.ok) {
-      const msg = json.message || 'Failed to create account';
+      const msg = body.message || 'Signup failed';
       setError(msg);
       throw new Error(msg);
     }
-
-    if (json.user) {
-      setUser(json.user);
-    }
-    return json;
+    return body;
   };
 
   const login = async (data: { email: string; password: string }) => {
@@ -82,39 +59,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify(data),
     });
 
-    const json = await res.json();
+    const body = await res.json();
     if (!res.ok) {
-      const msg = json.message || 'Invalid email or password';
+      const msg = body.message || 'Login failed';
       setError(msg);
       throw new Error(msg);
     }
 
-    setUser(json.user);
+    setUser(body.user);
   };
 
   const logout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } finally {
-      setUser(null);
-    }
+    setError(null);
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+    });
+    setUser(null);
   };
 
   const verifyEmail = async (token: string) => {
     setError(null);
-    const res = await fetch('/api/auth/verify-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    });
-
-    const json = await res.json();
+    const res = await fetch(`/api/auth/verify?token=${encodeURIComponent(token)}`);
+    const body = await res.json();
     if (!res.ok) {
-      throw new Error(json.message || 'Email verification failed');
-    }
-
-    if (user) {
-      setUser({ ...user, isVerified: true });
+      const msg = body.message || 'Email verification failed';
+      setError(msg);
+      throw new Error(msg);
     }
   };
 
@@ -126,9 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify({ email }),
     });
 
-    const json = await res.json();
+    const body = await res.json();
     if (!res.ok) {
-      throw new Error(json.message || 'Failed to resend verification link');
+      const msg = body.message || 'Failed to resend verification';
+      setError(msg);
+      throw new Error(msg);
     }
   };
 
@@ -140,11 +112,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify({ email }),
     });
 
-    const json = await res.json();
+    const body = await res.json();
     if (!res.ok) {
-      throw new Error(json.message || 'Failed to process request');
+      const msg = body.message || 'Failed to process forgot password';
+      setError(msg);
+      throw new Error(msg);
     }
-    return json;
+    return body;
   };
 
   const resetPassword = async (data: { token: string; password: string }) => {
@@ -155,11 +129,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify(data),
     });
 
-    const json = await res.json();
+    const body = await res.json();
     if (!res.ok) {
-      throw new Error(json.message || 'Failed to reset password');
+      const msg = body.message || 'Password reset failed';
+      setError(msg);
+      throw new Error(msg);
     }
-    setUser(null);
   };
 
   return (
@@ -181,12 +156,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

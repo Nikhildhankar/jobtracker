@@ -3,7 +3,7 @@ import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { CommandPalette } from '../ui/CommandPalette';
 import { Drawer } from '../ui/Drawer';
-import { useUI } from '../../context/UIContext';
+import { useUI } from '../../context/useUI';
 
 import { DashboardPage } from '../../pages/DashboardPage';
 import { PipelinePage } from '../../pages/PipelinePage';

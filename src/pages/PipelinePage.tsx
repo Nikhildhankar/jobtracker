@@ -12,7 +12,7 @@ import { Button } from '../components/ui/Button';
 import { KanbanColumn } from '../components/kanban/KanbanColumn';
 import { KanbanCard } from '../components/kanban/KanbanCard';
 import { QuickAddModal } from '../components/modals/QuickAddModal';
-import { useUI } from '../context/UIContext';
+import { useUI } from '../context/useUI';
 import { api } from '../services/api';
 import type { ApplicationData } from '../services/api';
 import type { PipelineStage } from '../../server/models/Application';

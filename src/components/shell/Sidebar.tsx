@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUI } from '../../context/useUI';
 import type { ActivePage } from '../../context/UIContext';
 
 export const Sidebar: React.FC = () => {

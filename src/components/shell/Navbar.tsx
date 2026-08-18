@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Plus, LogOut, CheckCircle2, AlertTriangle } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useUI } from '../../context/UIContext';
+import { useAuth } from '../../context/useAuth';
+import { useUI } from '../../context/useUI';
 import { Button } from '../ui/Button';
 
 export const Navbar: React.FC = () => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, LayoutDashboard, Kanban, FileText, MessageSquare, AlertCircle, Plus } from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUI } from '../../context/useUI';
 
 export const CommandPalette: React.FC = () => {
   const { commandPaletteOpen, setCommandPaletteOpen, setActivePage, setQuickAddOpen } = useUI();
