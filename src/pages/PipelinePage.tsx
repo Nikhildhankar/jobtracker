@@ -5,8 +5,12 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
 } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { clsx } from 'clsx';
 import {
   Plus,
   Search,
@@ -22,17 +26,173 @@ import {
   Trash2,
   FileEdit,
   Mail,
+  AlertCircle,
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { CompanyAvatar } from '../components/ui/CompanyAvatar';
-import { StageDropdown } from '../components/ui/StageDropdown';
-import { KanbanColumn } from '../components/kanban/KanbanColumn';
-import { KanbanCard } from '../components/kanban/KanbanCard';
+import { Button, CompanyAvatar, StageDropdown } from '../components/ui';
 import { useUI } from '../context/useUI';
 import { api } from '../services/api';
 import type { ApplicationData } from '../services/api';
 import type { PipelineStage } from '../../server/models/Application';
 
+/* ================= Kanban Card Sub-Component ================= */
+interface KanbanCardProps {
+  application: ApplicationData;
+  onClick: () => void;
+}
+
+const KanbanCard: React.FC<KanbanCardProps> = ({ application, onClick }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: application._id,
+    data: { application },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const now = new Date();
+  const lastHistory = application.stageHistory && application.stageHistory.length > 0
+    ? new Date(application.stageHistory[application.stageHistory.length - 1].timestamp)
+    : new Date(application.updatedAt || application.createdAt);
+  const daysInStage = Math.floor((now.getTime() - lastHistory.getTime()) / (1000 * 60 * 60 * 24));
+  const isStale = ['Applied', 'Screening'].includes(application.stage) && daysInStage >= 7;
+
+  const salaryText = application.salary && (application.salary.min || application.salary.max)
+    ? `$${(application.salary.min || 0) / 1000}k - $${(application.salary.max || 0) / 1000}k`
+    : null;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={onClick}
+      className={clsx(
+        'bg-white border border-[#E2E8F0] rounded-2xl p-4 cursor-grab active:cursor-grabbing space-y-3 select-none touch-none transition-all shadow-xs hover:border-[#CBD5E1] hover:shadow-md group',
+        isDragging && 'opacity-50 ring-2 ring-[#2B59FF] shadow-2xl scale-[1.02]',
+        isStale && 'border-[#FECDD3] bg-[#FFF1F2]/20'
+      )}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <CompanyAvatar name={application.companyName} size="sm" />
+          <span className="text-xs font-bold text-[#0F172A] group-hover:text-[#2B59FF] transition-colors truncate max-w-[120px]">
+            {application.companyName}
+          </span>
+        </div>
+
+        {isStale ? (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3]">
+            <AlertCircle className="w-3 h-3" /> {daysInStage}d stale
+          </span>
+        ) : (
+          <span className="text-[10px] font-mono text-[#64748B] flex items-center gap-1">
+            <Calendar className="w-3 h-3 text-[#94A3B8]" />
+            {daysInStage === 0 ? 'Today' : `${daysInStage}d ago`}
+          </span>
+        )}
+      </div>
+
+      <h4 className="text-sm font-semibold text-[#0F172A] leading-snug truncate">
+        {application.roleTitle}
+      </h4>
+
+      <div className="flex items-center justify-between text-xs pt-2 border-t border-[#F1F5F9]">
+        <span className="px-2 py-0.5 bg-[#F1F5F9] text-[#475569] rounded-md font-semibold text-[11px] flex items-center gap-1">
+          <MapPin className="w-3 h-3 text-[#94A3B8]" />
+          {application.workModel || 'Remote'}
+        </span>
+
+        {salaryText ? (
+          <span className="font-mono text-[#059669] font-bold text-[11px] flex items-center gap-0.5">
+            <DollarSign className="w-3 h-3" />
+            {salaryText}
+          </span>
+        ) : (
+          <span className="text-[10px] text-[#94A3B8] font-mono">No salary</span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ================= Kanban Column Sub-Component ================= */
+interface KanbanColumnProps {
+  id: PipelineStage;
+  title: string;
+  applications: ApplicationData[];
+  onCardClick: (appId: string) => void;
+  onAddClick: () => void;
+}
+
+const COLUMN_COLORS: Record<PipelineStage, { dot: string; headerBg: string }> = {
+  Wishlist: { dot: 'bg-[#64748B]', headerBg: 'bg-[#F1F5F9]' },
+  Applied: { dot: 'bg-[#2563EB]', headerBg: 'bg-[#EFF6FF]' },
+  Screening: { dot: 'bg-[#D97706]', headerBg: 'bg-[#FFFBEB]' },
+  Interviewing: { dot: 'bg-[#7C3AED]', headerBg: 'bg-[#F5F3FF]' },
+  Offer: { dot: 'bg-[#059669]', headerBg: 'bg-[#ECFDF5]' },
+  Archived: { dot: 'bg-[#71717A]', headerBg: 'bg-[#F4F4F5]' },
+};
+
+const KanbanColumn: React.FC<KanbanColumnProps> = ({
+  id,
+  title,
+  applications,
+  onCardClick,
+  onAddClick,
+}) => {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  const cardIds = applications.map((app) => app._id);
+  const colStyle = COLUMN_COLORS[id] || COLUMN_COLORS.Wishlist;
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`bg-[#F8FAFC] border rounded-2xl p-3 flex flex-col max-h-full space-y-3 min-w-[260px] transition-colors ${
+        isOver ? 'border-[#2B59FF] bg-[#EFF6FF]/60 ring-2 ring-[#2B59FF]/20' : 'border-[#E2E8F0]'
+      }`}
+    >
+      <div className="flex items-center justify-between px-1 py-0.5">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${colStyle.dot}`} />
+          <span className="text-xs font-bold text-[#0F172A] tracking-tight">{title}</span>
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold text-[#475569] bg-white border border-[#E2E8F0] rounded-full shadow-xs">
+            {applications.length}
+          </span>
+        </div>
+        <button
+          onClick={onAddClick}
+          title="Add application to this stage"
+          className="p-1 rounded-lg text-[#94A3B8] hover:text-[#0F172A] hover:bg-white transition-all cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <div className="space-y-2.5 overflow-y-auto flex-1 pr-0.5 min-h-[140px]">
+        <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
+          {applications.map((app) => (
+            <KanbanCard
+              key={app._id}
+              application={app}
+              onClick={() => onCardClick(app._id)}
+            />
+          ))}
+        </SortableContext>
+
+        {applications.length === 0 && (
+          <div className="h-28 border-2 border-dashed border-[#E2E8F0] rounded-xl flex items-center justify-center text-xs text-[#94A3B8] font-medium select-none">
+            Drop applications here
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ================= Consolidated Pipeline Page ================= */
 export const PipelinePage: React.FC = () => {
   const { setQuickAddOpen, openDrawer, updateStageCounts } = useUI();
 
@@ -92,7 +252,6 @@ export const PipelinePage: React.FC = () => {
     { id: 'Archived', title: 'Archived' },
   ];
 
-  // Stage change handler
   const handleStageChange = async (appId: string, targetStage: PipelineStage) => {
     const previous = [...applications];
     setApplications((prev) =>
@@ -118,7 +277,6 @@ export const PipelinePage: React.FC = () => {
     }
   };
 
-  // Delete handler
   const handleDeleteApplication = async (e: React.MouseEvent, appId: string) => {
     e.stopPropagation();
     if (!window.confirm('Delete this application from your tracker?')) return;
@@ -130,7 +288,6 @@ export const PipelinePage: React.FC = () => {
     }
   };
 
-  // Drag & Drop handlers
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const found = applications.find((app) => app._id === active.id);
@@ -154,7 +311,6 @@ export const PipelinePage: React.FC = () => {
     handleStageChange(appId, targetStage);
   };
 
-  // Filtered & Sorted applications
   const filteredApplications = useMemo(() => {
     return applications
       .filter((app) => {
@@ -193,32 +349,33 @@ export const PipelinePage: React.FC = () => {
   const activeOffersCount = applications.filter((a) => a.stage === 'Offer').length;
 
   return (
-    <div className="pipeline-page-container">
+    <div className="page-container">
       {/* Top Header Banner */}
-      <div className="pipeline-header-bar">
+      <div className="page-header">
         <div>
-          <h1 className="pipeline-header-title">
+          <h1 className="page-header-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span>Job Applications</span>
-            <span className="pipeline-count-tag">{applications.length} Tracked</span>
+            <span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 10px', borderRadius: '9999px', backgroundColor: '#EFF6FF', color: '#2B59FF', border: '1px solid #BFDBFE' }}>
+              {applications.length} Tracked
+            </span>
           </h1>
-          <p style={{ fontSize: '13px', color: '#64748B', marginTop: '2px' }}>
+          <p className="page-header-desc">
             Centralized search pipeline • {activeInterviewsCount} interviewing • {activeOffersCount} offers
           </p>
         </div>
 
-        {/* View Mode Switcher + Add Application Button */}
-        <div className="pipeline-controls-group">
-          <div className="view-mode-toggle">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ backgroundColor: '#ffffff', border: '1px solid #E2E8F0', padding: '4px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <button
               onClick={() => setViewMode('table')}
-              className={`view-mode-btn ${viewMode === 'table' ? 'active' : ''}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, border: 'none', background: viewMode === 'table' ? '#2B59FF' : 'transparent', color: viewMode === 'table' ? '#ffffff' : '#64748B', cursor: 'pointer' }}
             >
               <LayoutList size={14} />
               <span>Table</span>
             </button>
             <button
               onClick={() => setViewMode('kanban')}
-              className={`view-mode-btn ${viewMode === 'kanban' ? 'active' : ''}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, border: 'none', background: viewMode === 'kanban' ? '#2B59FF' : 'transparent', color: viewMode === 'kanban' ? '#ffffff' : '#64748B', cursor: 'pointer' }}
             >
               <KanbanIcon size={14} />
               <span>Board</span>
@@ -237,67 +394,57 @@ export const PipelinePage: React.FC = () => {
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="pipeline-filter-toolbar">
-        {/* Left: Search Input Bar */}
-        <div className="pipeline-search-input-wrap">
-          <Search size={14} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '12px' }} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Filter by company, role, or location..."
-            className="pipeline-search-input-field"
-          />
-        </div>
-
-        {/* Center/Right: Stage Filter Pills & Sort */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '2px' }}>
-          <div className="pipeline-stage-filter-list">
-            {['All', 'Applied', 'Screening', 'Interviewing', 'Offer', 'Wishlist', 'Archived'].map((stg) => {
-              const count = stageFilterCounts[stg] || 0;
-              const isSelected = selectedStageFilter === stg;
-              return (
-                <button
-                  key={stg}
-                  onClick={() => setSelectedStageFilter(stg)}
-                  className={`stage-filter-pill ${isSelected ? 'active' : ''}`}
-                >
-                  <span>{stg}</span>
-                  <span
-                    style={{
-                      fontSize: '10px',
-                      fontFamily: 'var(--font-mono)',
-                      padding: '1px 6px',
-                      borderRadius: '9999px',
-                      backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#e2e8f0',
-                      color: isSelected ? '#ffffff' : '#64748b',
-                    }}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+      <div style={{ padding: '12px 16px', backgroundColor: '#ffffff', border: '1px solid #E2E8F0', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+          <div className="input-with-icon-wrap" style={{ maxWidth: '400px', flex: 1 }}>
+            <Search className="input-leading-icon" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Filter by company, role, or location..."
+              className="form-input-with-icon"
+            />
           </div>
 
-          {/* Sort Dropdown */}
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              aria-label="Sort applications"
-              className="sort-dropdown-select"
-            >
-              <option value="newest">Sort: Newest</option>
-              <option value="company">Sort: Company A-Z</option>
-              <option value="salary">Sort: Salary High-Low</option>
-            </select>
-            <ArrowUpDown size={12} color="#94A3B8" style={{ position: 'absolute', left: '10px', pointerEvents: 'none' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {['All', 'Applied', 'Screening', 'Interviewing', 'Offer', 'Wishlist', 'Archived'].map((stg) => {
+                const count = stageFilterCounts[stg] || 0;
+                const isSelected = selectedStageFilter === stg;
+                return (
+                  <button
+                    key={stg}
+                    onClick={() => setSelectedStageFilter(stg)}
+                    style={{ padding: '5px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600, border: '1px solid #E2E8F0', backgroundColor: isSelected ? '#0F172A' : '#F8FAFC', color: isSelected ? '#ffffff' : '#475569', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
+                  >
+                    <span>{stg}</span>
+                    <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', padding: '1px 6px', borderRadius: '9999px', backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#E2E8F0', color: isSelected ? '#ffffff' : '#64748B' }}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                aria-label="Sort applications"
+                style={{ padding: '6px 12px 6px 28px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '12px', fontWeight: 500, color: '#475569', outline: 'none', cursor: 'pointer' }}
+              >
+                <option value="newest">Sort: Newest</option>
+                <option value="company">Sort: Company A-Z</option>
+                <option value="salary">Sort: Salary High-Low</option>
+              </select>
+              <ArrowUpDown size={12} color="#94A3B8" style={{ position: 'absolute', left: '10px', pointerEvents: 'none' }} />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main View Area: Table View or Kanban Board */}
+      {/* Main View Area */}
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {Array.from({ length: 5 }).map((_, i) => (
@@ -305,7 +452,7 @@ export const PipelinePage: React.FC = () => {
           ))}
         </div>
       ) : applications.length === 0 ? (
-        <div style={{ padding: '48px 24px', backgroundColor: '#ffffff', border: '1px solid #E2E8F0', borderRadius: '16px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', margin: '32px 0' }}>
+        <div style={{ padding: '48px 24px', backgroundColor: '#ffffff', border: '1px solid #E2E8F0', borderRadius: '18px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', margin: '32px 0' }}>
           <div style={{ width: '56px', height: '56px', borderRadius: '16px', backgroundColor: '#EFF6FF', color: '#2B59FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Sparkles size={28} />
           </div>
@@ -324,18 +471,17 @@ export const PipelinePage: React.FC = () => {
           </Button>
         </div>
       ) : viewMode === 'table' ? (
-        /* ================= SIMPLIFY-GRADE TABLE VIEW ================= */
-        <div className="simplify-table-wrapper">
+        <div style={{ background: '#ffffff', border: '1px solid #E2E8F0', borderRadius: '18px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(15,23,42,0.06)' }}>
           <div style={{ overflowX: 'auto' }}>
-            <table className="simplify-table">
+            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '13px' }}>
               <thead>
                 <tr>
-                  <th className="simplify-th">Company & Role</th>
-                  <th className="simplify-th">Status</th>
-                  <th className="simplify-th">Applied Date</th>
-                  <th className="simplify-th">Work Model & Location</th>
-                  <th className="simplify-th">Compensation</th>
-                  <th className="simplify-th" style={{ textAlign: 'right' }}>Actions</th>
+                  <th style={{ background: '#F8FAFC', padding: '12px 16px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', borderBottom: '1px solid #E2E8F0' }}>Company & Role</th>
+                  <th style={{ background: '#F8FAFC', padding: '12px 16px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', borderBottom: '1px solid #E2E8F0' }}>Status</th>
+                  <th style={{ background: '#F8FAFC', padding: '12px 16px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', borderBottom: '1px solid #E2E8F0' }}>Applied Date</th>
+                  <th style={{ background: '#F8FAFC', padding: '12px 16px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', borderBottom: '1px solid #E2E8F0' }}>Work Model</th>
+                  <th style={{ background: '#F8FAFC', padding: '12px 16px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', borderBottom: '1px solid #E2E8F0' }}>Compensation</th>
+                  <th style={{ background: '#F8FAFC', padding: '12px 16px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', borderBottom: '1px solid #E2E8F0', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -367,10 +513,10 @@ export const PipelinePage: React.FC = () => {
                       <tr
                         key={app._id}
                         onClick={() => openDrawer(app._id)}
-                        className="simplify-tr"
+                        style={{ cursor: 'pointer', transition: 'background-color 140ms ease' }}
+                        className="hover:bg-[#F8FAFC]"
                       >
-                        {/* Company & Role Column */}
-                        <td className="simplify-td">
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', borderBottom: '1px solid #F1F5F9' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <CompanyAvatar name={app.companyName} size="md" />
                             <div>
@@ -384,24 +530,21 @@ export const PipelinePage: React.FC = () => {
                           </div>
                         </td>
 
-                        {/* Interactive Status Pill Dropdown */}
-                        <td className="simplify-td" onClick={(e) => e.stopPropagation()}>
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', borderBottom: '1px solid #F1F5F9' }} onClick={(e) => e.stopPropagation()}>
                           <StageDropdown
                             stage={app.stage}
                             onChange={(newStage) => handleStageChange(app._id, newStage)}
                           />
                         </td>
 
-                        {/* Applied Date */}
-                        <td className="simplify-td" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#64748B' }}>
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', borderBottom: '1px solid #F1F5F9', fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#64748B' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <Calendar size={14} color="#94A3B8" />
                             <span>{appliedDateStr}</span>
                           </div>
                         </td>
 
-                        {/* Location & Work Model */}
-                        <td className="simplify-td">
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', borderBottom: '1px solid #F1F5F9' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, backgroundColor: '#F1F5F9', color: '#475569' }}>
                               {app.workModel || 'Remote'}
@@ -415,16 +558,14 @@ export const PipelinePage: React.FC = () => {
                           </div>
                         </td>
 
-                        {/* Salary */}
-                        <td className="simplify-td" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: '#059669' }}>
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', borderBottom: '1px solid #F1F5F9', fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: '#059669' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <DollarSign size={14} color="#059669" />
                             <span>{salaryFormatted}</span>
                           </div>
                         </td>
 
-                        {/* Actions */}
-                        <td className="simplify-td" style={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', borderBottom: '1px solid #F1F5F9', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
                             <button
                               onClick={() => openDrawer(app._id, 'prep')}
@@ -465,9 +606,8 @@ export const PipelinePage: React.FC = () => {
           </div>
         </div>
       ) : (
-        /* ================= SIMPLIFY-GRADE KANBAN VIEW ================= */
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="kanban-columns-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', alignItems: 'flex-start' }}>
             {columns.map((col) => (
               <KanbanColumn
                 key={col.id}
