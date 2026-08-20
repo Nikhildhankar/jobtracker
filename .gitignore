@@ -125,3 +125,11 @@ dist
 # Agent state
 .agents
 .gemini
+
+# Planning, PRD & internal draft docs
+PRD*.md
+PROJECT_STATE*.md
+ROADMAP*.md
+PROBLEMS*.md
+DESIGN_SYSTEM*.md
+playwright.config.ts
