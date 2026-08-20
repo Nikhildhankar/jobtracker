@@ -28,7 +28,6 @@ import { CompanyAvatar } from '../components/ui/CompanyAvatar';
 import { StageDropdown } from '../components/ui/StageDropdown';
 import { KanbanColumn } from '../components/kanban/KanbanColumn';
 import { KanbanCard } from '../components/kanban/KanbanCard';
-import { QuickAddModal } from '../components/modals/QuickAddModal';
 import { useUI } from '../context/useUI';
 import { api } from '../services/api';
 import type { ApplicationData } from '../services/api';
@@ -486,9 +485,6 @@ export const PipelinePage: React.FC = () => {
           </DragOverlay>
         </DndContext>
       )}
-
-      {/* Quick Add Modal */}
-      <QuickAddModal onSuccess={fetchApplications} />
     </div>
   );
 };

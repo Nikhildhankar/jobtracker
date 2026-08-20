@@ -3,6 +3,7 @@ import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { CommandPalette } from '../ui/CommandPalette';
 import { Drawer } from '../ui/Drawer';
+import { QuickAddModal } from '../modals/QuickAddModal';
 import { useUI } from '../../context/useUI';
 
 import { DashboardPage } from '../../pages/DashboardPage';
@@ -41,7 +42,7 @@ export const AppLayout: React.FC = () => {
         <main className="app-content-area">{renderActivePage()}</main>
       </div>
 
-      {/* Slide-Over Drawer */}
+      {/* Global Slide-Over Drawer */}
       <Drawer
         isOpen={Boolean(selectedAppId)}
         onClose={closeDrawer}
@@ -50,7 +51,10 @@ export const AppLayout: React.FC = () => {
         onTabChange={setDrawerTab}
       />
 
-      {/* Command Palette */}
+      {/* Global Quick Add Modal */}
+      <QuickAddModal />
+
+      {/* Global Command Palette */}
       <CommandPalette />
     </div>
   );
