@@ -67,59 +67,70 @@ export const AtsPage: React.FC = () => {
     ];
 
   return (
-    <div className="page-container">
-      {/* Top Header */}
-      <div className="page-header">
+    <div className="ats-page-container">
+      {/* Top Header Row */}
+      <div className="ats-header-row">
         <div>
-          <h1 className="page-header-title">ATS Resume Optimizer & AI Rewriter</h1>
-          <p className="page-header-desc">
-            Extract target JD keywords, audit ATS parser safety, and rewrite bullet points truthfully.
+          <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span>ATS Resume Optimizer & AI Rewriter</span>
+            <span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 10px', borderRadius: '9999px', backgroundColor: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0' }}>
+              Parser Ready
+            </span>
+          </h1>
+          <p style={{ fontSize: '13px', color: '#64748B', marginTop: '2px' }}>
+            Extract target JD keywords, audit ATS safety, and rewrite bullet points truthfully.
           </p>
         </div>
+
         <SegmentedTabs
           tabs={[
-            { id: 'editor', label: 'Base Resume JSON', icon: <FileText className="w-3.5 h-3.5" /> },
-            { id: 'analysis', label: 'ATS Audit & Gap Analysis', icon: <SearchCheck className="w-3.5 h-3.5" /> },
+            { id: 'editor', label: 'Base Resume JSON', icon: <FileText className="w-4 h-4" /> },
+            { id: 'analysis', label: 'ATS Audit & Gap Analysis', icon: <SearchCheck className="w-4 h-4" /> },
           ]}
           activeId={activeTab}
           onChange={(id) => setActiveTab(id as any)}
         />
       </div>
 
-      {/* Target Job Selector Strip */}
-      <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-4">
-        <h3 className="text-xs font-semibold uppercase text-[#0F172A] tracking-wider">
-          Target Job Description Source
-        </h3>
+      {/* Target Job Selector Card */}
+      <div className="ats-section-card">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Target Job Description Source
+          </h3>
+          <span style={{ fontSize: '12px', color: '#64748B' }}>
+            Choose an active pipeline job or paste raw text
+          </span>
+        </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-[#FFE4E6] border border-[#FECDD3] text-xs font-medium text-[#E11D48]">
+          <div style={{ padding: '12px 16px', borderRadius: '12px', backgroundColor: '#FFE4E6', border: '1px solid #FECDD3', fontSize: '12px', fontWeight: 600, color: '#E11D48' }}>
             {error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-[#7C8896]">Select Job from Pipeline</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+          <div className="form-group-wrap">
+            <label className="form-label-title">Select Job from Pipeline</label>
             <select
               value={selectedAppId}
               onChange={(e) => {
                 setSelectedAppId(e.target.value);
                 setRawJdText('');
               }}
-              className="w-full p-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+              className="form-select-box"
             >
               <option value="">-- Choose Pipeline Application --</option>
               {applications.map((app) => (
                 <option key={app._id} value={app._id}>
-                  {app.companyName} - {app.roleTitle} ({app.stage})
+                  {app.companyName} — {app.roleTitle} ({app.stage})
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-[#7C8896]">Or Paste Raw Job Description Text</label>
+          <div className="form-group-wrap">
+            <label className="form-label-title">Or Paste Raw Job Description Text</label>
             <textarea
               rows={2}
               value={rawJdText}
@@ -127,17 +138,18 @@ export const AtsPage: React.FC = () => {
                 setRawJdText(e.target.value);
                 setSelectedAppId('');
               }}
-              placeholder="Paste job posting duties, qualifications, and requirements..."
-              className="w-full p-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+              placeholder="Paste job posting requirements, skills, and qualifications..."
+              className="form-textarea-box"
             />
           </div>
         </div>
 
-        <div className="pt-1 flex justify-end">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '4px' }}>
           <Button
             variant="primary"
+            size="md"
             isLoading={analyzing}
-            icon={<Sparkles className="w-4 h-4" />}
+            icon={<Sparkles size={16} />}
             onClick={handleAnalyze}
           >
             Run ATS Gap Analysis
@@ -149,7 +161,7 @@ export const AtsPage: React.FC = () => {
       {activeTab === 'editor' ? (
         <ResumeEditor initialResume={baseResume} onSaveSuccess={() => {}} />
       ) : (
-        <div className="space-y-6">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <GapAnalysisView
             analysis={analysisResult}
             selectedMissingKeywords={selectedMissingKeywords}

@@ -17,43 +17,55 @@ export const CommandPalette: React.FC = () => {
     {
       id: 'nav-dashboard',
       label: 'Go to Dashboard',
-      category: 'Navigation',
-      icon: <LayoutDashboard className="w-4 h-4 text-[#2563EB]" />,
+      category: 'Analytics',
+      icon: <LayoutDashboard className="w-4 h-4" />,
+      iconBg: '#EFF6FF',
+      iconColor: '#2563EB',
       action: () => setActivePage('dashboard'),
     },
     {
       id: 'nav-pipeline',
       label: 'Go to Pipeline Kanban Board',
-      category: 'Navigation',
-      icon: <Kanban className="w-4 h-4 text-[#7C3AED]" />,
+      category: 'Pipeline',
+      icon: <Kanban className="w-4 h-4" />,
+      iconBg: '#F5F3FF',
+      iconColor: '#7C3AED',
       action: () => setActivePage('pipeline'),
     },
     {
       id: 'nav-ats',
       label: 'Go to ATS Resume Builder',
-      category: 'Navigation',
-      icon: <FileText className="w-4 h-4 text-[#059669]" />,
+      category: 'AI Optimizer',
+      icon: <FileText className="w-4 h-4" />,
+      iconBg: '#ECFDF5',
+      iconColor: '#059669',
       action: () => setActivePage('ats'),
     },
     {
       id: 'nav-prep',
       label: 'Go to AI Interview Prep',
-      category: 'Navigation',
-      icon: <MessageSquare className="w-4 h-4 text-[#D97706]" />,
+      category: 'AI Coach',
+      icon: <MessageSquare className="w-4 h-4" />,
+      iconBg: '#FFFBEB',
+      iconColor: '#D97706',
       action: () => setActivePage('prep'),
     },
     {
       id: 'nav-action',
       label: 'Go to Action Center (Follow-ups)',
-      category: 'Navigation',
-      icon: <AlertCircle className="w-4 h-4 text-[#E11D48]" />,
+      category: 'Reminders',
+      icon: <AlertCircle className="w-4 h-4" />,
+      iconBg: '#FFF1F2',
+      iconColor: '#E11D48',
       action: () => setActivePage('action'),
     },
     {
       id: 'action-quickadd',
       label: 'Add New Job Application',
-      category: 'Quick Actions',
-      icon: <Plus className="w-4 h-4 text-[#2563EB]" />,
+      category: 'Quick Action',
+      icon: <Plus className="w-4 h-4" />,
+      iconBg: '#EFF6FF',
+      iconColor: '#2B59FF',
       action: () => setQuickAddOpen(true),
     },
   ];
@@ -65,14 +77,14 @@ export const CommandPalette: React.FC = () => {
   return (
     <AnimatePresence>
       {commandPaletteOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 md:p-20">
+        <div className="cmd-palette-backdrop">
           {/* Backdrop Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setCommandPaletteOpen(false)}
-            className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-xs transition-opacity"
+            style={{ position: 'fixed', inset: 0 }}
           />
 
           {/* Modal Container */}
@@ -81,28 +93,29 @@ export const CommandPalette: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="relative max-w-xl mx-auto bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] overflow-hidden"
+            className="cmd-palette-modal"
+            style={{ position: 'relative', zIndex: 10 }}
           >
             {/* Search Input Bar */}
-            <div className="flex items-center px-4 border-b border-[#E2E8F0]">
-              <Search className="w-5 h-5 text-[#94A3B8] mr-3" />
+            <div className="cmd-palette-search-bar">
+              <Search className="w-5 h-5 text-[#94A3B8]" />
               <input
                 type="text"
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Type a command or search applications..."
-                className="w-full py-4 text-sm text-[#0F172A] bg-transparent outline-none placeholder-[#94A3B8]"
+                placeholder="Search commands, navigate pages, or add applications..."
+                className="cmd-palette-search-input"
               />
-              <span className="px-2 py-0.5 text-[10px] font-mono text-[#64748B] bg-[#F1F5F9] border border-[#E2E8F0] rounded">
+              <span style={{ padding: '3px 8px', fontSize: '11px', fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#64748B', backgroundColor: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: '6px' }}>
                 ESC
               </span>
             </div>
 
             {/* Results List */}
-            <div className="max-h-80 overflow-y-auto p-2 space-y-1">
+            <div className="cmd-palette-results-list">
               {filteredItems.length === 0 ? (
-                <div className="p-8 text-center text-sm text-[#64748B]">
+                <div style={{ padding: '32px', textAlign: 'center', fontSize: '13px', color: '#64748B' }}>
                   No commands or matching items found.
                 </div>
               ) : (
@@ -110,13 +123,28 @@ export const CommandPalette: React.FC = () => {
                   <button
                     key={item.id}
                     onClick={() => handleSelect(item.action)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#E2E8F0] border border-transparent transition-colors cursor-pointer group"
+                    className="cmd-palette-item"
                   >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span className="font-medium group-hover:text-[#2563EB]">{item.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '10px',
+                          backgroundColor: item.iconBg,
+                          color: item.iconColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {item.icon}
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>
+                        {item.label}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-medium text-[#7C8896] bg-[#F1F5F9] px-2 py-0.5 rounded">
+                    <span className="cmd-palette-category-badge">
                       {item.category}
                     </span>
                   </button>
@@ -125,11 +153,11 @@ export const CommandPalette: React.FC = () => {
             </div>
 
             {/* Footer Shortcuts */}
-            <div className="px-4 py-2.5 bg-[#F8FAFC] border-t border-[#E2E8F0] flex items-center justify-between text-xs text-[#7C8896]">
-              <span>Navigate with keyboard</span>
-              <div className="flex items-center gap-3 font-mono text-[11px]">
-                <span><kbd className="bg-white border px-1 rounded">↑↓</kbd> navigate</span>
-                <span><kbd className="bg-white border px-1 rounded">↵</kbd> select</span>
+            <div className="cmd-palette-footer">
+              <span>Quick Navigation</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontFamily: 'var(--font-mono)', fontSize: '11px' }}>
+                <span><kbd style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', padding: '2px 6px', borderRadius: '4px' }}>↑↓</kbd> navigate</span>
+                <span><kbd style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', padding: '2px 6px', borderRadius: '4px' }}>↵</kbd> select</span>
               </div>
             </div>
           </motion.div>

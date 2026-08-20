@@ -68,14 +68,14 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
   return (
     <AnimatePresence>
       {quickAddOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 md:p-10 flex items-center justify-center select-none">
+        <div className="modal-overlay-backdrop">
           {/* Backdrop Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setQuickAddOpen(false)}
-            className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-xs transition-opacity"
+            style={{ position: 'fixed', inset: 0 }}
           />
 
           {/* Modal Window */}
@@ -84,80 +84,85 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] overflow-hidden z-10"
+            className="modal-dialog-box"
+            style={{ position: 'relative', zIndex: 10 }}
           >
             {/* Header with Live Company Avatar */}
-            <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="modal-header-row">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 {companyName ? (
                   <CompanyAvatar name={companyName} size="md" />
                 ) : (
-                  <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] text-[#2B59FF] flex items-center justify-center font-bold text-sm">
-                    <Plus className="w-4 h-4" />
+                  <div style={{ width: '38px', height: '38px', borderRadius: '12px', backgroundColor: '#EFF6FF', color: '#2B59FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                    <Plus size={18} />
                   </div>
                 )}
                 <div>
-                  <h2 className="text-base font-bold text-[#0F172A]">
+                  <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', lineHeight: 1.2 }}>
                     {companyName ? `Add ${companyName}` : 'New Job Application'}
                   </h2>
-                  <p className="text-xs text-[#64748B]">Add a job to track in your search pipeline</p>
+                  <p style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+                    Track interviews, ATS keywords, and recruiter follow-ups
+                  </p>
                 </div>
               </div>
               <button
                 onClick={() => setQuickAddOpen(false)}
-                className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
+                style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'transparent', color: '#64748B', cursor: 'pointer' }}
               >
-                <X className="w-5 h-5" />
+                <X size={18} />
               </button>
             </div>
 
             {/* Form Content */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="modal-body-form">
               {error && (
-                <div className="p-3.5 rounded-xl bg-[#FFE4E6] border border-[#FECDD3] text-xs font-medium text-[#E11D48]">
+                <div style={{ padding: '12px 14px', borderRadius: '12px', backgroundColor: '#FFE4E6', border: '1px solid #FECDD3', fontSize: '12px', fontWeight: 600, color: '#E11D48' }}>
                   {error}
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Company Name *</label>
-                  <div className="relative">
-                    <Building2 className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
+              {/* Row 1: Company & Role */}
+              <div className="modal-form-grid-2">
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Company Name *</label>
+                  <div className="input-with-icon-wrap">
+                    <Building2 className="input-leading-icon" />
                     <input
                       type="text"
                       required
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       placeholder="e.g. Stripe, OpenAI..."
-                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
+                      className="form-input-with-icon"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Role Title *</label>
-                  <div className="relative">
-                    <Briefcase className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Role Title *</label>
+                  <div className="input-with-icon-wrap">
+                    <Briefcase className="input-leading-icon" />
                     <input
                       type="text"
                       required
                       value={roleTitle}
                       onChange={(e) => setRoleTitle(e.target.value)}
                       placeholder="e.g. Senior Software Engineer"
-                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
+                      className="form-input-with-icon"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Pipeline Stage</label>
+              {/* Row 2: Stage & Work Model */}
+              <div className="modal-form-grid-2">
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Pipeline Stage</label>
                   <select
                     value={stage}
                     onChange={(e) => setStage(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white cursor-pointer"
+                    className="form-select-box"
                   >
                     <option value="Wishlist">Wishlist</option>
                     <option value="Applied">Applied</option>
@@ -168,12 +173,12 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
                   </select>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Work Model</label>
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Work Model</label>
                   <select
                     value={workModel}
                     onChange={(e) => setWorkModel(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white cursor-pointer"
+                    className="form-select-box"
                   >
                     <option value="Remote">Remote</option>
                     <option value="Hybrid">Hybrid</option>
@@ -182,79 +187,85 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ onSuccess }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Location</label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
+              {/* Row 3: Location & Source */}
+              <div className="modal-form-grid-2">
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Location</label>
+                  <div className="input-with-icon-wrap">
+                    <MapPin className="input-leading-icon" />
                     <input
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="San Francisco, CA..."
-                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
+                      className="form-input-with-icon"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Source</label>
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Source</label>
                   <input
                     type="text"
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
                     placeholder="LinkedIn, Simplify, Referral..."
-                    className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
+                    className="form-input-box"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Min Salary ($ / yr)</label>
-                  <div className="relative">
-                    <DollarSign className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
+              {/* Row 4: Min & Max Salary */}
+              <div className="modal-form-grid-2">
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Min Salary ($ / yr)</label>
+                  <div className="input-with-icon-wrap">
+                    <DollarSign className="input-leading-icon" />
                     <input
                       type="number"
                       value={minSalary}
                       onChange={(e) => setMinSalary(e.target.value)}
                       placeholder="140000"
-                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-mono text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
+                      className="form-input-with-icon"
+                      style={{ fontFamily: 'var(--font-mono)' }}
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0F172A]">Max Salary ($ / yr)</label>
-                  <div className="relative">
-                    <DollarSign className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
+                <div className="form-group-wrap">
+                  <label className="form-label-title">Max Salary ($ / yr)</label>
+                  <div className="input-with-icon-wrap">
+                    <DollarSign className="input-leading-icon" />
                     <input
                       type="number"
                       value={maxSalary}
                       onChange={(e) => setMaxSalary(e.target.value)}
                       placeholder="180000"
-                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs font-mono text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
+                      className="form-input-with-icon"
+                      style={{ fontFamily: 'var(--font-mono)' }}
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-[#0F172A]">Job Description (Optional)</label>
+              {/* Row 5: Job Description */}
+              <div className="form-group-wrap">
+                <label className="form-label-title">Job Description (Optional)</label>
                 <textarea
                   rows={3}
                   value={jobDescriptionRaw}
                   onChange={(e) => setJobDescriptionRaw(e.target.value)}
-                  placeholder="Paste raw JD text for ATS keyword extraction & AI question prep..."
-                  className="w-full p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2B59FF] focus:bg-white transition-all"
+                  placeholder="Paste raw JD duties & qualifications for automatic ATS keyword extraction..."
+                  className="form-textarea-box"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <Button type="button" variant="outline" size="sm" onClick={() => setQuickAddOpen(false)}>
+              {/* Actions Footer */}
+              <div className="modal-footer-actions">
+                <Button type="button" variant="secondary" size="md" onClick={() => setQuickAddOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" size="sm" isLoading={submitting} className="bg-[#2B59FF] hover:bg-[#1E46E6]">
+                <Button type="submit" variant="primary" size="md" isLoading={submitting}>
                   Save Application
                 </Button>
               </div>

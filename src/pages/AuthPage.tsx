@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/useAuth';
 import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
-import '../styles/login.css';
 
 export const AuthPage: React.FC = () => {
   const { login, signup, forgotPassword, error } = useAuth();

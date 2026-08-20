@@ -85,19 +85,19 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ initialResume, onSav
   };
 
   return (
-    <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="ats-section-card">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h3 className="text-base font-semibold text-[#0F172A]">Master Base Resume JSON</h3>
-          <p className="text-xs text-[#7C8896]">
+          <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>Master Base Resume JSON</h3>
+          <p style={{ fontSize: '13px', color: '#64748B', marginTop: '2px' }}>
             Your central source-of-truth resume. All ATS scans and AI rewrites build from this base.
           </p>
         </div>
         <Button
           variant="primary"
-          size="sm"
+          size="md"
           isLoading={saving}
-          icon={savedMsg ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Save className="w-4 h-4" />}
+          icon={savedMsg ? <CheckCircle2 className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
           onClick={handleSave}
         >
           {savedMsg ? 'Saved!' : 'Save Base Resume'}
@@ -105,97 +105,93 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({ initialResume, onSav
       </div>
 
       {/* Professional Summary */}
-      <div className="space-y-2">
-        <label className="text-xs font-semibold text-[#0F172A] uppercase tracking-wider">
-          Professional Summary
-        </label>
+      <div className="form-group-wrap">
+        <label className="form-label-title">Professional Summary</label>
         <textarea
           rows={3}
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
-          placeholder="Brief executive summary of core technical background and focus..."
-          className="w-full p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+          placeholder="Brief executive summary of core technical background, architectural focus, and impact..."
+          className="form-textarea-box"
         />
       </div>
 
       {/* Technical Skills Chips */}
-      <div className="space-y-2">
-        <label className="text-xs font-semibold text-[#0F172A] uppercase tracking-wider">
-          Technical Skills & Keywords
-        </label>
-        <div className="flex flex-wrap gap-2 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
+      <div className="form-group-wrap">
+        <label className="form-label-title">Technical Skills & Keywords</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#F8FAFC' }}>
           {techSkills.map((skill) => (
-            <span
-              key={skill}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#E2E8F0] text-xs font-medium text-[#0F172A] shadow-xs"
-            >
-              {skill}
+            <span key={skill} className="ats-skill-chip">
+              <span>{skill}</span>
               <button
                 onClick={() => handleRemoveSkill(skill)}
-                className="text-[#94A3B8] hover:text-[#E11D48] cursor-pointer"
+                style={{ border: 'none', background: 'transparent', color: '#94A3B8', cursor: 'pointer', fontSize: '14px', lineHeight: 1 }}
+                title="Remove skill"
               >
                 ×
               </button>
             </span>
           ))}
-          <div className="flex items-center gap-1">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <input
               type="text"
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
               placeholder="+ Add Skill"
-              className="px-2 py-0.5 text-xs bg-transparent outline-none border-b border-transparent focus:border-[#2563EB] w-24"
+              style={{ padding: '6px 10px', fontSize: '12px', borderRadius: '8px', border: '1px dashed #CBD5E1', backgroundColor: '#FFFFFF', outline: 'none', width: '100px' }}
             />
           </div>
         </div>
       </div>
 
       {/* Experience Bullets */}
-      <div className="space-y-4">
-        <label className="text-xs font-semibold text-[#0F172A] uppercase tracking-wider">
-          Professional Experience Bullets
-        </label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <label className="form-label-title">Professional Experience Bullets</label>
         {experience.map((exp, expIdx) => (
-          <div key={expIdx} className="p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#0F172A]">{exp.company}</span>
-                <span className="text-xs text-[#7C8896]">• {exp.role}</span>
+          <div key={expIdx} className="ats-experience-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>{exp.company}</span>
+                <span style={{ fontSize: '13px', color: '#64748B' }}>• {exp.role}</span>
               </div>
-              <span className="text-[11px] font-mono text-[#7C8896]">
+              <span style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#64748B' }}>
                 {exp.startDate} - {exp.endDate}
               </span>
             </div>
 
-            <div className="space-y-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {exp.bullets.map((bullet: string, bIdx: number) => (
-                <div key={bIdx} className="flex items-start gap-2">
-                  <span className="text-xs text-[#2563EB] mt-2">•</span>
+                <div key={bIdx} className="ats-bullet-item">
+                  <span style={{ fontSize: '14px', color: '#2B59FF', marginTop: '10px' }}>•</span>
                   <textarea
                     rows={2}
                     value={bullet}
                     onChange={(e) => handleUpdateBullet(expIdx, bIdx, e.target.value)}
-                    className="flex-1 p-2.5 rounded-lg border border-[#E2E8F0] bg-white text-xs text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    className="form-textarea-box"
+                    style={{ flex: 1 }}
                   />
                   <button
                     onClick={() => handleRemoveBullet(expIdx, bIdx)}
-                    className="p-1 text-[#94A3B8] hover:text-[#E11D48] mt-2 cursor-pointer"
+                    className="ats-delete-btn"
+                    title="Delete Bullet"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))}
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              icon={<Plus className="w-3.5 h-3.5" />}
-              onClick={() => handleAddBullet(expIdx)}
-            >
-              Add Bullet
-            </Button>
+            <div>
+              <Button
+                variant="outline"
+                size="sm"
+                icon={<Plus size={14} />}
+                onClick={() => handleAddBullet(expIdx)}
+              >
+                Add Bullet
+              </Button>
+            </div>
           </div>
         ))}
       </div>
